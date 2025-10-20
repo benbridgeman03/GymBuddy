@@ -23,7 +23,7 @@ class HomeView extends StatelessWidget {
 
               const SizedBox(height: 40),
 
-              // ▶️ Start Workout Button
+              // Start Workout Button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(

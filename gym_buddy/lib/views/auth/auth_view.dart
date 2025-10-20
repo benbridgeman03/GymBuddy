@@ -1,6 +1,6 @@
 // lib/view/auth_view.dart
 import 'package:flutter/material.dart';
-import '../services/auth_service.dart';
+import '../../services/auth_service.dart';
 
 class AuthView extends StatefulWidget {
   const AuthView({super.key});

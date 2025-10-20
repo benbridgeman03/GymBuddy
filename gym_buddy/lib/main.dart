@@ -2,9 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:gym_buddy/view/confirm_auth_view.dart';
-import 'view/auth_view.dart';
-import 'view/home_view.dart';
+import 'package:gym_buddy/views/auth/confirm_auth_view.dart';
+import 'views/auth/auth_view.dart';
+import 'views/home_view.dart';
+import 'views/main_app_shell.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -18,10 +19,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      // 1️⃣ Global Theme
+      // Global Theme
       theme: ThemeData(
         // Background color for Scaffold
-        scaffoldBackgroundColor: const Color.fromARGB(255, 4, 22, 56),
+        scaffoldBackgroundColor: const Color.fromARGB(255, 5, 30, 77),
 
         // Default text style
         textTheme: GoogleFonts.fredokaTextTheme(
@@ -103,7 +104,7 @@ class MyApp extends StatelessWidget {
                 final reloadedUser = userSnapshot.data;
 
                 if (reloadedUser != null && reloadedUser.emailVerified) {
-                  return const HomeView();
+                  return const AppShell();
                 } else {
                   return const ConfirmAuthView();
                 }
