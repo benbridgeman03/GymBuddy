@@ -13,7 +13,7 @@ class _AppShellState extends State<AppShell> {
 
   final List<Widget> _pages = [
     const HomeView(),
-    const Center(child: Text("Excersizes Page")), // placeholder for now
+    const Center(child: Text("Exercises Page")), // placeholder for now
     const Center(child: Text("History Page")), // placeholder for now
     const Center(child: Text("Profile Page")), // placeholder for now
   ];
@@ -26,7 +26,7 @@ class _AppShellState extends State<AppShell> {
         type: BottomNavigationBarType.fixed,
         currentIndex: _currentIndex,
         onTap: (index) => setState(() => _currentIndex = index),
-        backgroundColor: const Color.fromARGB(255, 56, 60, 116),
+        backgroundColor: Colors.lightBlue,
         selectedItemColor: Colors.blue,
         unselectedItemColor: Colors.white,
         items: const [
@@ -36,7 +36,7 @@ class _AppShellState extends State<AppShell> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.fitness_center),
-            label: "Excersises",
+            label: "Exercises",
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.access_time),

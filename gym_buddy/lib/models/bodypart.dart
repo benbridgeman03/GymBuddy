@@ -1,9 +1,1 @@
-enum BodyPart {
-  chest,
-  back,
-  biceps,
-  triceps,
-  shoulders,
-  legs,
-  core,
-}
+enum BodyPart { chest, back, biceps, triceps, shoulders, legs, core }

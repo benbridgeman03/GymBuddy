@@ -1,7 +1,7 @@
-import 'excersize.dart';
+import 'exercise.dart';
 
-class WorkoutSet{
-  final Excersize excersize;
+class WorkoutSet {
+  final Exercise excersize;
   final double reps;
   final double weight;
 

@@ -6,10 +6,12 @@ import 'package:gym_buddy/views/auth/confirm_auth_view.dart';
 import 'views/auth/auth_view.dart';
 import 'views/home_view.dart';
 import 'views/main_app_shell.dart';
+import 'services/seed_data.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
+  seedDefaultExercises();
   runApp(const MyApp());
 }
 
