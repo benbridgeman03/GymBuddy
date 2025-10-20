@@ -6,12 +6,10 @@ import 'package:gym_buddy/views/auth/confirm_auth_view.dart';
 import 'views/auth/auth_view.dart';
 import 'views/home_view.dart';
 import 'views/main_app_shell.dart';
-import 'services/seed_data.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  seedDefaultExercises();
   runApp(const MyApp());
 }
 
@@ -27,7 +25,7 @@ class MyApp extends StatelessWidget {
         scaffoldBackgroundColor: const Color.fromARGB(255, 5, 30, 77),
 
         // Default text style
-        textTheme: GoogleFonts.fredokaTextTheme(
+        textTheme: GoogleFonts.robotoTextTheme(
           // cleaner font
           Theme.of(context).textTheme.apply(
             bodyColor: Colors.white,
@@ -57,7 +55,7 @@ class MyApp extends StatelessWidget {
               fontWeight: FontWeight.w600,
               fontSize: 16,
             ),
-            padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
+            padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(12),
             ),

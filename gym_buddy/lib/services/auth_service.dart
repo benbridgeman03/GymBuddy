@@ -1,20 +1,27 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'seed_data.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   /// Sign up new user
   Future<User?> signUp(String email, String password) async {
-    final cred = await FirebaseAuth.instance.createUserWithEmailAndPassword(
+    final cred = await _auth.createUserWithEmailAndPassword(
       email: email,
       password: password,
     );
 
+    final user = cred.user;
+
     // Send verification email
-    if (cred.user != null && !cred.user!.emailVerified) {
-      await cred.user!.sendEmailVerification();
+    if (user != null && !user.emailVerified) {
+      await user.sendEmailVerification();
+
+      // Seed default exercises for this user
+      await seedDefaultExercises(user.uid);
     }
-    return cred.user;
+
+    return user;
   }
 
   /// Send email verification to user

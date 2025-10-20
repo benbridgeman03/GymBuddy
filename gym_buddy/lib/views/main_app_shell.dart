@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'home_view.dart';
+import 'excersizes_view.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
@@ -13,7 +14,7 @@ class _AppShellState extends State<AppShell> {
 
   final List<Widget> _pages = [
     const HomeView(),
-    const Center(child: Text("Exercises Page")), // placeholder for now
+    const ExcersizesView(), // placeholder for now
     const Center(child: Text("History Page")), // placeholder for now
     const Center(child: Text("Profile Page")), // placeholder for now
   ];
