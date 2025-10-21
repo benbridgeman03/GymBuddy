@@ -5,11 +5,7 @@ class Workout {
   final DateTime startTime;
   final DateTime endTime;
 
-  Workout({
-    required this.sets,
-    required this.startTime,
-    required this.endTime,
-  });
+  Workout({required this.sets, required this.startTime, required this.endTime});
 
   Duration get duration => endTime.difference(startTime);
 

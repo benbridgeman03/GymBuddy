@@ -75,6 +75,22 @@ class MyApp extends StatelessWidget {
           foregroundColor: Colors.white,
           elevation: 0,
         ),
+
+        dialogTheme: DialogThemeData(
+          backgroundColor: const Color(0xFF0A1A3A), // dark blue-ish background
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16), // rounded corners
+          ),
+          titleTextStyle: GoogleFonts.roboto(
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+          contentTextStyle: GoogleFonts.roboto(
+            fontSize: 16,
+            color: Colors.white70,
+          ),
+        ),
       ),
 
       routes: {
