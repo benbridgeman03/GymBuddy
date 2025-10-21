@@ -20,9 +20,6 @@ class HomeView extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-
-              const SizedBox(height: 40),
-
               // Start Workout Button
               SizedBox(
                 width: double.infinity,
@@ -33,7 +30,37 @@ class HomeView extends StatelessWidget {
                   child: const Text('Start Workout'),
                 ),
               ),
-              const SizedBox(height: 16),
+              const SizedBox(height: 40),
+
+              // Templates Section
+              Row(
+                children: [
+                  Text(
+                    'Templates',
+                    style: Theme.of(context).textTheme.headlineMedium?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+
+                  const Spacer(),
+
+                  Container(
+                    decoration: BoxDecoration(
+                      color: Colors.blue,
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: IconButton(
+                      onPressed: () {
+                        Navigator.pushReplacementNamed(context, '/template');
+                      },
+                      icon: const Icon(Icons.add),
+                      color: Colors.white,
+                      iconSize: 28,
+                    ),
+                  ),
+                ],
+              ),
+
               ElevatedButton(
                 onPressed: () async {
                   await FirebaseAuth.instance.signOut();

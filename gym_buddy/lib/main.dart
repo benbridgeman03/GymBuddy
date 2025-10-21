@@ -6,6 +6,7 @@ import 'package:gym_buddy/views/auth/confirm_auth_view.dart';
 import 'views/auth/auth_view.dart';
 import 'views/home_view.dart';
 import 'views/main_app_shell.dart';
+import 'views/template_view.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -95,6 +96,7 @@ class MyApp extends StatelessWidget {
 
       routes: {
         '/confirm-email': (context) => const ConfirmAuthView(),
+        '/template': (context) => const TemplateView(),
         '/home': (context) => const HomeView(),
       },
       home: StreamBuilder<User?>(
