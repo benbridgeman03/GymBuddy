@@ -97,7 +97,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/confirm-email': (context) => const ConfirmAuthView(),
         '/template': (context) => const TemplateView(),
-        '/home': (context) => const HomeView(),
+        '/home': (context) => const AppShell(),
       },
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
@@ -109,26 +109,14 @@ class MyApp extends StatelessWidget {
           final user = snapshot.data;
 
           if (user != null) {
-            // Reload user to get updated emailVerified status
-            return FutureBuilder<User?>(
-              future: user.reload().then(
-                (_) => FirebaseAuth.instance.currentUser,
-              ),
-              builder: (context, userSnapshot) {
-                if (userSnapshot.connectionState == ConnectionState.waiting) {
-                  return const Center(child: CircularProgressIndicator());
-                }
-
-                final reloadedUser = userSnapshot.data;
-
-                if (reloadedUser != null && reloadedUser.emailVerified) {
-                  return const AppShell();
-                } else {
-                  return const ConfirmAuthView();
-                }
-              },
-            );
+            // User exists
+            if (user.emailVerified) {
+              return const AppShell(); // verified → go home
+            } else {
+              return const ConfirmAuthView(); // unverified → confirm email
+            }
           } else {
+            // No user → show login/signup page
             return const AuthView();
           }
         },

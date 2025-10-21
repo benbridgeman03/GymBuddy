@@ -136,6 +136,18 @@ class ExcersizesView extends StatelessWidget {
                                             ex.name,
                                             style: const TextStyle(
                                               color: Colors.white,
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: 16, // adjust as needed
+                                            ),
+                                          ),
+                                          subtitle: Text(
+                                            '${ex.bodyPart.name.capitalize()} • ${ex.category.name.capitalize()}',
+                                            style: TextStyle(
+                                              color: Colors
+                                                  .grey[400], // slightly lighter color
+                                              fontSize: 12, // smaller font
+                                              fontStyle: FontStyle
+                                                  .italic, // optional styling
                                             ),
                                           ),
                                         ),

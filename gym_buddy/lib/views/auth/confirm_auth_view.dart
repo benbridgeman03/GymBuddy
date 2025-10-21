@@ -43,34 +43,62 @@ class _ConfirmAuthViewState extends State<ConfirmAuthView> {
     }
 
     return Scaffold(
-      appBar: AppBar(title: const Text('Confirm your email')),
-      body: Center(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                user != null
-                    ? 'A verification email has been sent to ${user.email}.\nPlease check your inbox and click the link.'
-                    : 'A verification email has been sent.\nPlease check your inbox and click the link.',
-                textAlign: TextAlign.center,
-                style: const TextStyle(fontSize: 18),
+      body: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            const SizedBox(height: 40), // optional spacing from top
+            Row(
+              children: [
+                const Text(
+                  'Confirm Email',
+                  style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+                  textAlign: TextAlign.left,
+                ),
+                const Spacer(),
+                IconButton(
+                  onPressed: () async {
+                    await FirebaseAuth.instance.signOut();
+                    if (mounted) {
+                      Navigator.pushReplacementNamed(context, '/');
+                    }
+                  },
+                  icon: const Icon(Icons.close),
+                  color: Colors.white,
+                ),
+              ],
+            ),
+            const SizedBox(height: 40), // space between header and message
+            Expanded(
+              child: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      user != null
+                          ? 'A verification email has been sent to ${user.email}.\nPlease check your inbox and click the link.'
+                          : 'A verification email has been sent.\nPlease check your inbox and click the link.',
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(fontSize: 18),
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton(
+                      onPressed: checkEmailVerified,
+                      child: isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text('I have verified'),
+                    ),
+                    const SizedBox(height: 10),
+                    TextButton(
+                      onPressed: resendVerification,
+                      child: const Text('Resend verification email'),
+                    ),
+                  ],
+                ),
               ),
-              const SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: checkEmailVerified,
-                child: isLoading
-                    ? const CircularProgressIndicator(color: Colors.white)
-                    : const Text('I have verified'),
-              ),
-              const SizedBox(height: 10),
-              TextButton(
-                onPressed: resendVerification,
-                child: const Text('Resend verification email'),
-              ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
