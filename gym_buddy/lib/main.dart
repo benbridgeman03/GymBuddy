@@ -4,7 +4,6 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gym_buddy/views/auth/confirm_auth_view.dart';
 import 'views/auth/auth_view.dart';
-import 'views/home_view.dart';
 import 'views/main_app_shell.dart';
 import 'views/template_view.dart';
 
