@@ -1,37 +1,48 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'set_type.dart';
 
-enum SetType { warmup, working, cooldown }
+//one set definition in a workout template
+class WorkoutSet {
+  final SetType setType;
+  final int restSeconds; // rest after this set, before the next one
+
+  WorkoutSet({required this.setType, required this.restSeconds});
+
+  Map<String, dynamic> toMap() => {
+    'setType': setType.name,
+    'restSeconds': restSeconds,
+  };
+
+  factory WorkoutSet.fromMap(Map<String, dynamic> data) => WorkoutSet(
+    setType: SetType.values.firstWhere((e) => e.name == data['setType']),
+    restSeconds: data['restSeconds'] ?? 0,
+  );
+}
 
 class WorkoutExercise {
-  final String excersiseId;
+  final String exerciseId;
   final String name;
-  final int sets;
-  final SetType setType;
+  final List<WorkoutSet> sets;
 
   WorkoutExercise({
-    required this.excersiseId,
+    required this.exerciseId,
     required this.name,
     required this.sets,
-    required this.setType,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'exerciseId': excersiseId,
-      'name': name,
-      'sets': sets,
-      'setType': setType.name,
-    };
-  }
+  Map<String, dynamic> toMap() => {
+    'exerciseId': exerciseId,
+    'name': name,
+    'sets': sets.map((s) => s.toMap()).toList(),
+  };
 
-  factory WorkoutExercise.fromMap(Map<String, dynamic> data) {
-    return WorkoutExercise(
-      excersiseId: data['exerciseId'],
-      name: data['name'],
-      sets: data['sets'],
-      setType: SetType.values.firstWhere((e) => e.name == data['setType']),
-    );
-  }
+  factory WorkoutExercise.fromMap(Map<String, dynamic> data) => WorkoutExercise(
+    exerciseId: data['exerciseId'],
+    name: data['name'],
+    sets: (data['sets'] as List<dynamic>)
+        .map((s) => WorkoutSet.fromMap(s))
+        .toList(),
+  );
 }
 
 class WorkoutTemplate {
@@ -47,13 +58,11 @@ class WorkoutTemplate {
     required this.createdAt,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
-      'name': name,
-      'createdAt': Timestamp.fromDate(createdAt),
-      'exercises': exercises.map((e) => e.toMap()).toList(),
-    };
-  }
+  Map<String, dynamic> toMap() => {
+    'name': name,
+    'createdAt': Timestamp.fromDate(createdAt),
+    'exercises': exercises.map((e) => e.toMap()).toList(),
+  };
 
   factory WorkoutTemplate.fromDoc(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;

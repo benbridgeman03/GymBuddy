@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gym_buddy/models/exercise.dart';
 import 'package:gym_buddy/models/wokrout_template.dart';
-import 'package:dropdown_search/dropdown_search.dart';
 
 class TemplateView extends StatelessWidget {
   const TemplateView({super.key});
@@ -15,6 +14,7 @@ class TemplateView extends StatelessWidget {
     if (uid == null) {
       return const Center(child: Text('Please log in.'));
     }
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -22,7 +22,7 @@ class TemplateView extends StatelessWidget {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Title
+              // Title Row
               Row(
                 children: [
                   Text(
@@ -42,11 +42,13 @@ class TemplateView extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 16),
+
+              // Add Exercise Button
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    upsertExercise(context, uid);
+                    openExercisePicker(context, uid);
                   },
                   child: const Text('Add Exercise'),
                 ),
@@ -58,16 +60,16 @@ class TemplateView extends StatelessWidget {
     );
   }
 
-  void upsertExercise(
+  /// Opens the exercise picker dialog directly (no small dialog first)
+  void openExercisePicker(
     BuildContext context,
     String uid, {
     WorkoutExercise? existing,
   }) async {
-    String? selectedExerciseId = existing?.excersiseId;
+    String? selectedExerciseId = existing?.exerciseId;
     String exerciseName = existing?.name ?? '';
-    int reps = existing?.sets ?? 0;
-    SetType setType = existing?.setType ?? SetType.working;
 
+    // 🔹 Load exercises from Firestore
     final snapshot = await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
@@ -78,54 +80,120 @@ class TemplateView extends StatelessWidget {
         .map((doc) => Exercise.fromDoc(doc))
         .toList();
 
-    showDialog(
+    // 🔹 Open the big picker dialog directly
+    final selected = await showDialog<String>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Row(
+      builder: (_) => ExercisePickerDialog(
+        exercises: exercises,
+        selectedId: selectedExerciseId,
+      ),
+    );
+
+    if (selected != null) {
+      final chosen = exercises.firstWhere((ex) => ex.id == selected);
+      exerciseName = chosen.name;
+
+      // TODO: Do whatever you need with the selected exercise here
+      // e.g., save to workout template or update Firestore
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Selected: $exerciseName')));
+    }
+  }
+}
+
+class ExercisePickerDialog extends StatefulWidget {
+  final List<Exercise> exercises;
+  final String? selectedId;
+
+  const ExercisePickerDialog({
+    super.key,
+    required this.exercises,
+    this.selectedId,
+  });
+
+  @override
+  State<ExercisePickerDialog> createState() => _ExercisePickerDialogState();
+}
+
+class _ExercisePickerDialogState extends State<ExercisePickerDialog> {
+  String query = '';
+
+  @override
+  Widget build(BuildContext context) {
+    // Filter and sort alphabetically
+    final filtered =
+        widget.exercises
+            .where((e) => e.name.toLowerCase().contains(query.toLowerCase()))
+            .toList()
+          ..sort((a, b) => a.name.compareTo(b.name));
+
+    // Group by first letter
+    final Map<String, List<Exercise>> grouped = {};
+    for (var e in filtered) {
+      final letter = e.name[0].toUpperCase();
+      grouped.putIfAbsent(letter, () => []).add(e);
+    }
+
+    return AlertDialog(
+      backgroundColor: const Color.fromARGB(255, 8, 28, 70),
+      title: const Text(
+        'Select Exercise',
+        style: TextStyle(color: Colors.white),
+      ),
+      content: SizedBox(
+        width: double.maxFinite,
+        height: 450,
+        child: Column(
           children: [
-            Text(existing == null ? 'Add Exercise' : 'Edit Exercise'),
-            const Spacer(),
-            IconButton(
-              onPressed: () => Navigator.pop(context),
-              icon: const Icon(Icons.close),
-              color: Colors.white,
+            TextField(
+              decoration: const InputDecoration(
+                labelText: 'Search',
+                labelStyle: TextStyle(color: Colors.white70),
+                prefixIcon: Icon(Icons.search, color: Colors.white70),
+              ),
+              style: const TextStyle(color: Colors.white),
+              onChanged: (val) => setState(() => query = val),
             ),
-          ],
-        ),
-        content: StatefulBuilder(
-          builder: (context, setState) => SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                DropdownButtonFormField<String>(
-                  initialValue: selectedExerciseId,
-                  decoration: const InputDecoration(labelText: 'Exercise'),
-                  dropdownColor: Color.fromARGB(255, 8, 28, 70),
-                  style: const TextStyle(color: Colors.white),
-                  iconEnabledColor: Colors.white70,
-                  items: exercises
-                      .map(
-                        (exercise) => DropdownMenuItem<String>(
-                          value: exercise.id,
+            const SizedBox(height: 10),
+            Expanded(
+              child: Scrollbar(
+                child: ListView(
+                  children: grouped.entries.map((entry) {
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6.0),
                           child: Text(
-                            exercise.name,
-                            style: const TextStyle(color: Colors.white),
+                            entry.key,
+                            style: const TextStyle(
+                              color: Colors.white70,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),
                           ),
                         ),
-                      )
-                      .toList(),
-                  onChanged: (val) => setState(() {
-                    selectedExerciseId = val!;
-                    final selected = exercises.firstWhere(
-                      (ex) => ex.id == val,
-                      orElse: () => exercises.first,
+                        ...entry.value.map((e) {
+                          final isSelected = e.id == widget.selectedId;
+                          return ListTile(
+                            title: Text(
+                              e.name,
+                              style: const TextStyle(color: Colors.white),
+                            ),
+                            tileColor: isSelected
+                                ? Colors.blueGrey.withOpacity(0.4)
+                                : null,
+                            onTap: () => Navigator.pop(context, e.id),
+                          );
+                        }),
+                      ],
                     );
-                    exerciseName = selected.name;
-                  }),
+                  }).toList(),
                 ),
-              ],
+              ),
             ),
-          ),
+          ],
         ),
       ),
     );

@@ -51,6 +51,7 @@ class ExcersizesView extends StatelessWidget {
                 ],
               ),
               const SizedBox(height: 40),
+              //Exercise List
               Expanded(
                 child: Material(
                   color: Colors.transparent,
