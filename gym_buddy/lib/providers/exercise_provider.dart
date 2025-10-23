@@ -2,7 +2,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../models/exercise.dart';
+import '../models/exercise.dart';
 
 class ExerciseProvider extends ChangeNotifier {
   final List<Exercise> _exercises = [];

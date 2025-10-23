@@ -1,11 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gym_buddy/models/wokrout_template.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
 
   @override
   Widget build(BuildContext context) {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+
+    if (uid == null) {
+      return const Center(child: Text('Please log in.'));
+    }
+
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -59,6 +67,49 @@ class HomeView extends StatelessWidget {
                     ),
                   ),
                 ],
+              ),
+              const SizedBox(height: 16),
+              Expanded(
+                child: StreamBuilder(
+                  stream: FirebaseFirestore.instance
+                      .collection('users')
+                      .doc(uid)
+                      .collection('templates')
+                      .orderBy('name')
+                      .snapshots(),
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    }
+                    if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+                      return const Center(child: Text('No exercises found.'));
+                    }
+                    final templates = snapshot.data!.docs
+                        .map((doc) => WorkoutTemplate.fromDoc(doc))
+                        .toList();
+                    return ListView(
+                      children: [
+                        ...templates.map((template) {
+                          return Container(
+                            height: 60,
+                            decoration: BoxDecoration(
+                              color: Color.fromARGB(255, 8, 28, 70),
+                              borderRadius: BorderRadius.circular(12),
+                              border: Border.all(color: Colors.white24),
+                            ),
+                            child: ListTile(
+                              title: Text(
+                                template.name,
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            ),
+                          );
+                        }),
+                        const SizedBox(height: 16),
+                      ],
+                    );
+                  },
+                ),
               ),
               ElevatedButton(
                 onPressed: () async {

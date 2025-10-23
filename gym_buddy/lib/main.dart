@@ -7,7 +7,7 @@ import 'views/auth/auth_view.dart';
 import 'views/main_app_shell.dart';
 import 'views/template_view.dart';
 import 'package:provider/provider.dart';
-import '/services/providers/exercise_provider.dart';
+import 'providers/exercise_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
