@@ -4,21 +4,21 @@ import 'package:gym_buddy/models/wokrout_template.dart';
 import 'package:gym_buddy/services/min_sec_input_formatter.dart';
 import 'package:gym_buddy/models/set_type.dart';
 
-class WorkoutExerciseEditor extends StatefulWidget {
+class WorkoutExerciseTemplate extends StatefulWidget {
   final Exercise exercise;
   final VoidCallback? onRemove;
 
-  const WorkoutExerciseEditor({
+  const WorkoutExerciseTemplate({
     super.key,
     required this.exercise,
     this.onRemove,
   });
 
   @override
-  State<WorkoutExerciseEditor> createState() => WorkoutExerciseEditorState();
+  State<WorkoutExerciseTemplate> createState() => WorkoutExerciseTemplateState();
 }
 
-class WorkoutExerciseEditorState extends State<WorkoutExerciseEditor> {
+class WorkoutExerciseTemplateState extends State<WorkoutExerciseTemplate> {
   List<Map<String, dynamic>> sets = [];
 
   void _addSet() {

@@ -107,6 +107,7 @@ class MyApp extends StatelessWidget {
         '/template': (context) => const TemplateView(),
         '/home': (context) => const AppShell(),
       },
+      
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {

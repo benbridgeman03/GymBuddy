@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gym_buddy/models/exercise.dart';
 import 'package:gym_buddy/models/wokrout_template.dart';
-import 'package:gym_buddy/widgets/workout_exercise_editor.dart';
+import 'package:gym_buddy/widgets/workout_exercise_template.dart';
 import '../widgets/exercise_picker.dart';
 
 class TemplateView extends StatefulWidget {
@@ -15,7 +15,7 @@ class TemplateView extends StatefulWidget {
 
 class _TemplateView extends State<TemplateView> {
   final List<Exercise> _workoutExercises = [];
-  final List<GlobalKey<WorkoutExerciseEditorState>> _editorKeys = [];
+  final List<GlobalKey<WorkoutExerciseTemplateState>> _editorKeys = [];
 
   final TextEditingController _templateName = TextEditingController();
 
@@ -57,7 +57,7 @@ class _TemplateView extends State<TemplateView> {
   void _addExercise(Exercise exercise) {
     setState(() {
       _workoutExercises.add(exercise);
-      _editorKeys.add(GlobalKey<WorkoutExerciseEditorState>());
+      _editorKeys.add(GlobalKey<WorkoutExerciseTemplateState>());
     });
   }
 
@@ -148,7 +148,7 @@ class _TemplateView extends State<TemplateView> {
                         Navigator.pushReplacementNamed(context, '/home');
                       },
                       icon: const Icon(Icons.close),
-                      color: Colors.white,
+                      color: Colors.red,
                     ),
                   ],
                 ),
@@ -160,7 +160,7 @@ class _TemplateView extends State<TemplateView> {
                 ),
                 const SizedBox(height: 16),
                 ..._workoutExercises.map(
-                  (ex) => WorkoutExerciseEditor(
+                  (ex) => WorkoutExerciseTemplate(
                     key: _editorKeys[_workoutExercises.indexOf(ex)],
                     exercise: ex,
                     onRemove: () {

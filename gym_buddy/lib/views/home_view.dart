@@ -35,7 +35,7 @@ class HomeView extends StatelessWidget {
                   onPressed: () {
                     // TODO: navigate to workout screen
                   },
-                  child: const Text('Start Workout'),
+                  child: const Text('Start Empty Workout'),
                 ),
               ),
               const SizedBox(height: 40),
@@ -84,9 +84,12 @@ class HomeView extends StatelessWidget {
                     if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
                       return const Center(child: Text('No exercises found.'));
                     }
+
+                    // Maps data from Firebase to WorkoutTemplate
                     final templates = snapshot.data!.docs
                         .map((doc) => WorkoutTemplate.fromDoc(doc))
                         .toList();
+
                     return ListView(
                       children: [
                         ...templates.map((template) {
@@ -105,7 +108,6 @@ class HomeView extends StatelessWidget {
                             ),
                           );
                         }),
-                        const SizedBox(height: 16),
                       ],
                     );
                   },
