@@ -6,11 +6,20 @@ import 'package:gym_buddy/views/auth/confirm_auth_view.dart';
 import 'views/auth/auth_view.dart';
 import 'views/main_app_shell.dart';
 import 'views/template_view.dart';
+import 'package:provider/provider.dart';
+import '/services/providers/exercise_provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ExerciseProvider()..init()),
+      ],
+      child: const MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
@@ -22,7 +31,7 @@ class MyApp extends StatelessWidget {
       // Global Theme
       theme: ThemeData(
         // Background color for Scaffold
-        scaffoldBackgroundColor: const Color.fromARGB(255, 5, 30, 77),
+        scaffoldBackgroundColor: const Color.fromARGB(255, 15, 23, 42),
 
         // Default text style
         textTheme: GoogleFonts.robotoTextTheme(

@@ -60,7 +60,6 @@ class HomeView extends StatelessWidget {
                   ),
                 ],
               ),
-
               ElevatedButton(
                 onPressed: () async {
                   await FirebaseAuth.instance.signOut();
