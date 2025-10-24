@@ -3,7 +3,7 @@ import 'package:gym_buddy/models/exercise.dart';
 
 class ExercisePickerDialog extends StatefulWidget {
   final List<Exercise> exercises;
-  final String? selectedId;
+  final Exercise? selectedId;
 
   const ExercisePickerDialog({
     super.key,

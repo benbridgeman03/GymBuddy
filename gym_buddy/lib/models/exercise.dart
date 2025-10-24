@@ -28,6 +28,21 @@ class Exercise {
     return {'name': name, 'bodyPart': bodyPart.name, 'category': category.name};
   }
 
+  factory Exercise.fromMap(Map<String, dynamic> data, {String? id}) {
+    return Exercise(
+      id: id ?? data['id'] ?? '',
+      name: data['name'] ?? '',
+      bodyPart: BodyPart.values.firstWhere(
+        (b) => b.name == (data['bodyPart'] ?? 'other'),
+        orElse: () => BodyPart.chest,
+      ),
+      category: ExcersizeCategory.values.firstWhere(
+        (c) => c.name == (data['category'] ?? 'other'),
+        orElse: () => ExcersizeCategory.other,
+      ),
+    );
+  }
+
   factory Exercise.fromDoc(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return Exercise(

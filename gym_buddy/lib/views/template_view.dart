@@ -7,7 +7,8 @@ import 'package:gym_buddy/widgets/workout_exercise_template.dart';
 import '../widgets/exercise_picker.dart';
 
 class TemplateView extends StatefulWidget {
-  const TemplateView({super.key});
+  final WorkoutTemplate? existingTemplate;
+  const TemplateView({super.key, this.existingTemplate});
 
   @override
   State<TemplateView> createState() => _TemplateView();
@@ -19,14 +20,27 @@ class _TemplateView extends State<TemplateView> {
 
   final TextEditingController _templateName = TextEditingController();
 
+  @override
+  void initState() {
+    super.initState();
+    final t = widget.existingTemplate;
+    if (t != null) {
+      _templateName.text = t.name;
+      _workoutExercises.addAll(t.exercises.map((ex) => ex.exercise));
+      _editorKeys.addAll(
+        t.exercises.map((_) => GlobalKey<WorkoutExerciseTemplateState>()),
+      );
+    }
+  }
+
   /// Opens the exercise picker dialog directly (no small dialog first)
   void _openExercisePicker(
     BuildContext context,
     String uid, {
     WorkoutExercise? existing,
   }) async {
-    String? selectedExerciseId = existing?.exerciseId;
-    String exerciseName = existing?.name ?? '';
+    Exercise? selectedExerciseId = existing?.exercise;
+    String exerciseName = existing?.exercise.name ?? '';
 
     // Load exercises from Firestore
     final snapshot = await FirebaseFirestore.instance

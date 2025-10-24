@@ -15,7 +15,8 @@ class WorkoutExerciseTemplate extends StatefulWidget {
   });
 
   @override
-  State<WorkoutExerciseTemplate> createState() => WorkoutExerciseTemplateState();
+  State<WorkoutExerciseTemplate> createState() =>
+      WorkoutExerciseTemplateState();
 }
 
 class WorkoutExerciseTemplateState extends State<WorkoutExerciseTemplate> {
@@ -52,8 +53,7 @@ class WorkoutExerciseTemplateState extends State<WorkoutExerciseTemplate> {
 
   WorkoutExercise toWorkoutExercise() {
     return WorkoutExercise(
-      exerciseId: widget.exercise.id,
-      name: widget.exercise.name,
+      exercise: widget.exercise,
       sets: sets.map((set) {
         return WorkoutSet(
           setType: SetType.values.firstWhere(

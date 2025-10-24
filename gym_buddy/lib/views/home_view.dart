@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gym_buddy/models/wokrout_template.dart';
+import 'package:gym_buddy/views/template_view.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -90,25 +91,115 @@ class HomeView extends StatelessWidget {
                         .map((doc) => WorkoutTemplate.fromDoc(doc))
                         .toList();
 
-                    return ListView(
-                      children: [
-                        ...templates.map((template) {
-                          return Container(
-                            height: 60,
-                            decoration: BoxDecoration(
-                              color: Color.fromARGB(255, 8, 28, 70),
-                              borderRadius: BorderRadius.circular(12),
-                              border: Border.all(color: Colors.white24),
+                    return ListView.separated(
+                      itemCount: templates.length,
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 12),
+                      itemBuilder: (context, index) {
+                        final template = templates[index];
+                        return Container(
+                          decoration: BoxDecoration(
+                            color: const Color.fromARGB(255, 8, 28, 70),
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(color: Colors.white24),
+                          ),
+                          child: Theme(
+                            // Override ExpansionTile default colors
+                            data: Theme.of(context).copyWith(
+                              dividerColor: Colors.transparent,
+                              splashColor: Colors.transparent,
+                              highlightColor: Colors.transparent,
                             ),
-                            child: ListTile(
+                            child: ExpansionTile(
                               title: Text(
                                 template.name,
-                                style: const TextStyle(color: Colors.white),
+                                style: const TextStyle(
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
+                                  fontSize: 18,
+                                ),
                               ),
+                              iconColor: Colors.white,
+                              collapsedIconColor: Colors.white70,
+                              childrenPadding: const EdgeInsets.fromLTRB(
+                                16,
+                                0,
+                                16,
+                                12,
+                              ),
+                              children: [
+                                Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    for (
+                                      int i = 0;
+                                      i < template.exercises.length;
+                                      i++
+                                    )
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(
+                                          vertical: 4.0,
+                                        ),
+                                        child: Row(
+                                          mainAxisAlignment:
+                                              i == template.exercises.length - 1
+                                              ? MainAxisAlignment.spaceBetween
+                                              : MainAxisAlignment.start,
+                                          children: [
+                                            Row(
+                                              children: [
+                                                Text(
+                                                  template
+                                                      .exercises[i]
+                                                      .exercise
+                                                      .name,
+                                                  style: const TextStyle(
+                                                    color: Colors.white70,
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                                const SizedBox(width: 4),
+                                                Text(
+                                                  '× ${template.exercises[i].sets.length}',
+                                                  style: const TextStyle(
+                                                    color: Colors.white70,
+                                                    fontSize: 16,
+                                                  ),
+                                                ),
+                                              ],
+                                            ),
+                                            if (i ==
+                                                template.exercises.length - 1)
+                                              TextButton(
+                                                onPressed: () {
+                                                  Navigator.push(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder: (context) =>
+                                                          TemplateView(
+                                                            existingTemplate:
+                                                                template, // pass the template you want to edit
+                                                          ),
+                                                    ),
+                                                  );
+                                                },
+                                                child: const Text(
+                                                  'Edit',
+                                                  style: TextStyle(
+                                                    color: Colors.white,
+                                                  ),
+                                                ),
+                                              ),
+                                          ],
+                                        ),
+                                      ),
+                                  ],
+                                ),
+                              ],
                             ),
-                          );
-                        }),
-                      ],
+                          ),
+                        );
+                      },
                     );
                   },
                 ),

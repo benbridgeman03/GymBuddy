@@ -1,4 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gym_buddy/models/exercise.dart';
 import 'set_type.dart';
 
 //one set definition in a workout template
@@ -20,25 +21,18 @@ class WorkoutSet {
 }
 
 class WorkoutExercise {
-  final String exerciseId;
-  final String name;
+  final Exercise exercise;
   final List<WorkoutSet> sets;
 
-  WorkoutExercise({
-    required this.exerciseId,
-    required this.name,
-    required this.sets,
-  });
+  WorkoutExercise({required this.exercise, required this.sets});
 
   Map<String, dynamic> toMap() => {
-    'exerciseId': exerciseId,
-    'name': name,
+    'exercise': exercise.toMap(), // ✅ convert to map
     'sets': sets.map((s) => s.toMap()).toList(),
   };
 
   factory WorkoutExercise.fromMap(Map<String, dynamic> data) => WorkoutExercise(
-    exerciseId: data['exerciseId'],
-    name: data['name'],
+    exercise: Exercise.fromMap(data['exercise']),
     sets: (data['sets'] as List<dynamic>)
         .map((s) => WorkoutSet.fromMap(s))
         .toList(),
