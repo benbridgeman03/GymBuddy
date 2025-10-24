@@ -172,6 +172,30 @@ class HomeView extends StatelessWidget {
                                             if (i ==
                                                 template.exercises.length - 1)
                                               TextButton(
+                                                style: TextButton.styleFrom(
+                                                  padding:
+                                                      const EdgeInsets.symmetric(
+                                                        horizontal: 6,
+                                                        vertical: 2,
+                                                      ),
+                                                  minimumSize: const Size(0, 0),
+                                                  tapTargetSize:
+                                                      MaterialTapTargetSize
+                                                          .shrinkWrap,
+                                                  foregroundColor: Colors
+                                                      .white, // ripple color
+                                                  overlayColor: Colors
+                                                      .white24, // subtle ripple on press
+                                                  shape:
+                                                      const RoundedRectangleBorder(
+                                                        borderRadius:
+                                                            BorderRadius.all(
+                                                              Radius.circular(
+                                                                4,
+                                                              ),
+                                                            ),
+                                                      ),
+                                                ),
                                                 onPressed: () {
                                                   Navigator.push(
                                                     context,
@@ -187,7 +211,13 @@ class HomeView extends StatelessWidget {
                                                 child: const Text(
                                                   'Edit',
                                                   style: TextStyle(
-                                                    color: Colors.white,
+                                                    color: Colors
+                                                        .blue, // slightly muted
+                                                    fontSize: 15,
+                                                    decoration: TextDecoration
+                                                        .underline, // like a text link
+                                                    decorationColor:
+                                                        Colors.blue,
                                                   ),
                                                 ),
                                               ),
