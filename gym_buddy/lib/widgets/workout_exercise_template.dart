@@ -36,7 +36,7 @@ class WorkoutExerciseTemplateState extends State<WorkoutExerciseTemplate> {
 
   void _addSet() {
     setState(() {
-      int defaultRest = 60; // seconds
+      int defaultRest = 180; // seconds
       int minutes = defaultRest ~/ 60;
       int seconds = defaultRest % 60;
       String formattedRest = '$minutes:${seconds.toString().padLeft(2, '0')}';
@@ -66,6 +66,7 @@ class WorkoutExerciseTemplateState extends State<WorkoutExerciseTemplate> {
             (e) => e.name == (set['type'] ?? 'Working'),
             orElse: () => SetType.working,
           ),
+          reps: set['reps'] ?? 0,
           restSeconds: set['rest'] ?? 0,
         );
       }).toList(),
@@ -176,7 +177,9 @@ class WorkoutExerciseTemplateState extends State<WorkoutExerciseTemplate> {
                           initialValue: setTypesMap.entries
                               .firstWhere(
                                 (e) => e.value.name == set['type'],
-                                orElse: () => setTypesMap.entries.first,
+                                orElse: () => setTypesMap.entries
+                                    .where((e) => e.key == 'Working')
+                                    .first,
                               )
                               .key, // default to Working
                           decoration: const InputDecoration(

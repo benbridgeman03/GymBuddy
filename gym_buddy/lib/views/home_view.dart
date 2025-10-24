@@ -84,7 +84,7 @@ class HomeView extends StatelessWidget {
                       return const Center(child: CircularProgressIndicator());
                     }
                     if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
-                      return const Center(child: Text('No exercises found.'));
+                      return const Center(child: Text('No templates found.'));
                     }
 
                     // Maps data from Firebase to WorkoutTemplate
@@ -179,7 +179,7 @@ class HomeView extends StatelessWidget {
                                                       builder: (context) =>
                                                           TemplateView(
                                                             existingTemplate:
-                                                                template, // pass the template you want to edit
+                                                                template,
                                                           ),
                                                     ),
                                                   );

@@ -3,7 +3,6 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gym_buddy/models/exercise.dart';
 import 'package:gym_buddy/models/wokrout_template.dart';
-import 'package:gym_buddy/services/string_extension.dart';
 import 'package:gym_buddy/widgets/workout_exercise_template.dart';
 import '../widgets/exercise_picker.dart';
 
@@ -191,20 +190,21 @@ class _TemplateView extends State<TemplateView> {
                 ..._workoutExercises.asMap().entries.map((entry) {
                   final index = entry.key;
                   final exercise = entry.value;
-                  final initialSets = widget
-                      .existingTemplate
-                      ?.exercises[index]
-                      .sets
-                      .map(
-                        (s) => {
-                          'type': s.setType.name,
-                          'rest': s.restSeconds,
-                          'restFormatted':
-                              '${s.restSeconds ~/ 60}:${(s.restSeconds % 60).toString().padLeft(2, '0')}',
-                          'reps': 8,
-                        },
-                      )
-                      .toList();
+                  final initialSets =
+                      (widget.existingTemplate != null &&
+                          index < widget.existingTemplate!.exercises.length)
+                      ? widget.existingTemplate!.exercises[index].sets
+                            .map(
+                              (s) => {
+                                'type': s.setType.name,
+                                'rest': s.restSeconds,
+                                'restFormatted':
+                                    '${s.restSeconds ~/ 60}:${(s.restSeconds % 60).toString().padLeft(2, '0')}',
+                                'reps': s.reps,
+                              },
+                            )
+                            .toList()
+                      : null;
 
                   return WorkoutExerciseTemplate(
                     key: _editorKeys[index],

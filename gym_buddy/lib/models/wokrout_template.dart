@@ -5,17 +5,24 @@ import 'set_type.dart';
 //one set definition in a workout template
 class WorkoutSet {
   final SetType setType;
+  final int reps;
   final int restSeconds; // rest after this set, before the next one
 
-  WorkoutSet({required this.setType, required this.restSeconds});
+  WorkoutSet({
+    required this.setType,
+    required this.reps,
+    required this.restSeconds,
+  });
 
   Map<String, dynamic> toMap() => {
     'setType': setType.name,
+    'reps': reps,
     'restSeconds': restSeconds,
   };
 
   factory WorkoutSet.fromMap(Map<String, dynamic> data) => WorkoutSet(
     setType: SetType.values.firstWhere((e) => e.name == data['setType']),
+    reps: data['reps'] ?? 0,
     restSeconds: data['restSeconds'] ?? 0,
   );
 }
