@@ -6,11 +6,13 @@ import 'package:gym_buddy/models/set_type.dart';
 
 class WorkoutExerciseTemplate extends StatefulWidget {
   final Exercise exercise;
+  final List<Map<String, dynamic>>? initialSets;
   final VoidCallback? onRemove;
 
   const WorkoutExerciseTemplate({
     super.key,
     required this.exercise,
+    this.initialSets,
     this.onRemove,
   });
 
@@ -21,6 +23,16 @@ class WorkoutExerciseTemplate extends StatefulWidget {
 
 class WorkoutExerciseTemplateState extends State<WorkoutExerciseTemplate> {
   List<Map<String, dynamic>> sets = [];
+
+  @override
+  void initState() {
+    super.initState();
+    if (widget.initialSets != null && widget.initialSets!.isNotEmpty) {
+      sets = List<Map<String, dynamic>>.from(widget.initialSets!);
+    } else {
+      _addSet();
+    }
+  }
 
   void _addSet() {
     setState(() {
@@ -43,12 +55,6 @@ class WorkoutExerciseTemplateState extends State<WorkoutExerciseTemplate> {
     setState(() {
       sets.removeAt(index);
     });
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _addSet();
   }
 
   WorkoutExercise toWorkoutExercise() {
@@ -167,8 +173,12 @@ class WorkoutExerciseTemplateState extends State<WorkoutExerciseTemplate> {
                       child: SizedBox(
                         height: 36, // same height as TextFields
                         child: DropdownButtonFormField<String>(
-                          initialValue:
-                              set['type'] ?? 'Working', // default to Working
+                          initialValue: setTypesMap.entries
+                              .firstWhere(
+                                (e) => e.value.name == set['type'],
+                                orElse: () => setTypesMap.entries.first,
+                              )
+                              .key, // default to Working
                           decoration: const InputDecoration(
                             isDense: true,
                             contentPadding: EdgeInsets.symmetric(
@@ -179,7 +189,7 @@ class WorkoutExerciseTemplateState extends State<WorkoutExerciseTemplate> {
                           ),
                           dropdownColor: Colors.blueGrey[900],
                           style: const TextStyle(color: Colors.white),
-                          items: ['Warm-up', 'Working', 'Drop Set']
+                          items: setTypesMap.keys
                               .map(
                                 (label) => DropdownMenuItem(
                                   value: label,
@@ -192,7 +202,8 @@ class WorkoutExerciseTemplateState extends State<WorkoutExerciseTemplate> {
                               .toList(),
                           onChanged: (value) {
                             setState(() {
-                              set['type'] = value!;
+                              set['type'] =
+                                  setTypesMap[value!]!.name; // store enum name
                             });
                           },
                         ),

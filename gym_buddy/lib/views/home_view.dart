@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gym_buddy/models/wokrout_template.dart';
 import 'package:gym_buddy/views/template_view.dart';
+import 'package:gym_buddy/models/set_type.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -160,7 +161,7 @@ class HomeView extends StatelessWidget {
                                                 ),
                                                 const SizedBox(width: 4),
                                                 Text(
-                                                  '× ${template.exercises[i].sets.length}',
+                                                  '× ${template.exercises[i].sets.where((ex) => ex.setType != SetType.warmup).length}',
                                                   style: const TextStyle(
                                                     color: Colors.white70,
                                                     fontSize: 16,

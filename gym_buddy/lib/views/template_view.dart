@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gym_buddy/models/exercise.dart';
 import 'package:gym_buddy/models/wokrout_template.dart';
+import 'package:gym_buddy/services/string_extension.dart';
 import 'package:gym_buddy/widgets/workout_exercise_template.dart';
 import '../widgets/exercise_picker.dart';
 
@@ -88,6 +89,7 @@ class _TemplateView extends State<TemplateView> {
   void _saveTemplate() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
+    final existingId = widget.existingTemplate?.id;
 
     final exercises = <WorkoutExercise>[];
 
@@ -118,11 +120,24 @@ class _TemplateView extends State<TemplateView> {
       createdAt: DateTime.now(),
     );
 
-    await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .collection('templates')
-        .add(template.toMap());
+    final templateData = template.toMap();
+
+    if (existingId == null) {
+      // New template
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('templates')
+          .add(templateData);
+    } else {
+      // Existing template: update
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('templates')
+          .doc(existingId)
+          .set(templateData); // overwrites existing
+    }
 
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -173,17 +188,35 @@ class _TemplateView extends State<TemplateView> {
                   decoration: const InputDecoration(labelText: 'Template Name'),
                 ),
                 const SizedBox(height: 16),
-                ..._workoutExercises.map(
-                  (ex) => WorkoutExerciseTemplate(
-                    key: _editorKeys[_workoutExercises.indexOf(ex)],
-                    exercise: ex,
+                ..._workoutExercises.asMap().entries.map((entry) {
+                  final index = entry.key;
+                  final exercise = entry.value;
+                  final initialSets = widget
+                      .existingTemplate
+                      ?.exercises[index]
+                      .sets
+                      .map(
+                        (s) => {
+                          'type': s.setType.name,
+                          'rest': s.restSeconds,
+                          'restFormatted':
+                              '${s.restSeconds ~/ 60}:${(s.restSeconds % 60).toString().padLeft(2, '0')}',
+                          'reps': 8,
+                        },
+                      )
+                      .toList();
+
+                  return WorkoutExerciseTemplate(
+                    key: _editorKeys[index],
+                    exercise: exercise,
+                    initialSets: initialSets,
                     onRemove: () {
                       setState(() {
-                        _removeExercise(ex);
+                        _removeExercise(exercise);
                       });
                     },
-                  ),
-                ),
+                  );
+                }),
 
                 // Add Exercise Button
                 SizedBox(
