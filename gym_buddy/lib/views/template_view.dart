@@ -33,7 +33,6 @@ class _TemplateView extends State<TemplateView> {
     }
   }
 
-  /// Opens the exercise picker dialog directly (no small dialog first)
   void _openExercisePicker(
     BuildContext context,
     String uid, {

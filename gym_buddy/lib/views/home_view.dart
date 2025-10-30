@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gym_buddy/models/wokrout_template.dart';
+import 'package:gym_buddy/providers/workout_manager.dart';
 import 'package:gym_buddy/views/template_view.dart';
 import 'package:gym_buddy/models/set_type.dart';
 import 'package:provider/provider.dart';
@@ -39,6 +40,7 @@ class HomeView extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
+                    context.read<WorkoutManager>().start();
                     panelManager.openPanel();
                   },
                   child: const Text('Start Empty Workout'),
@@ -246,6 +248,7 @@ class HomeView extends StatelessWidget {
                 },
                 child: const Text('Logout'),
               ),
+              const SizedBox(height: 24),
             ],
           ),
         ),

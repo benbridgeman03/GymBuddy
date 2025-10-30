@@ -5,6 +5,7 @@ import '/views/workout_view.dart';
 import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '/providers/panel_manager.dart';
+import 'package:gym_buddy/providers/workout_manager.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
@@ -25,59 +26,65 @@ class _AppShellState extends State<AppShell> {
 
   Widget build(BuildContext context) {
     final panelManager = Provider.of<PanelManager>(context);
+    final workoutManager = Provider.of<WorkoutManager>(context);
 
-    return Stack(
-      children: [
-        Scaffold(
-          body: _pages[_currentIndex],
-          bottomNavigationBar: Theme(
-            data: Theme.of(context).copyWith(
-              splashFactory: NoSplash.splashFactory,
-              highlightColor: Colors.transparent,
-            ),
-            child: BottomNavigationBar(
-              type: BottomNavigationBarType.fixed,
-              currentIndex: _currentIndex,
-              onTap: (index) => setState(() => _currentIndex = index),
-              backgroundColor: const Color.fromARGB(255, 28, 34, 59),
-              selectedItemColor: Colors.blue,
-              unselectedItemColor: Colors.white,
-              items: const [
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.add),
-                  label: "Start Workout",
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.fitness_center),
-                  label: "Exercises",
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.access_time),
-                  label: "History",
-                ),
-                BottomNavigationBarItem(
-                  icon: Icon(Icons.person),
-                  label: "Profile",
-                ),
-              ],
+    return Scaffold(
+      body: Stack(
+        children: [
+          _pages[_currentIndex],
+
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: SlidingUpPanel(
+              controller: panelManager.panelController,
+              minHeight: workoutManager.isRunning ? 50 : 0,
+              maxHeight: MediaQuery.of(context).size.height * 0.85,
+              borderRadius: const BorderRadius.vertical(
+                top: Radius.circular(20),
+              ),
+              backdropEnabled: true,
+              backdropTapClosesPanel: true,
+              panelSnapping: true,
+              panel: const WorkoutView(),
             ),
           ),
-        ),
+        ],
+      ),
 
-        Align(
-          alignment: Alignment.bottomCenter,
-          child: SlidingUpPanel(
-            controller: panelManager.panelController,
-            minHeight: 0,
-            maxHeight: MediaQuery.of(context).size.height * 0.85,
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
-            backdropEnabled: true,
-            backdropTapClosesPanel: true,
-            panelSnapping: true,
-            panel: const WorkoutView(),
-          ),
+      bottomNavigationBar: Theme(
+        data: Theme.of(context).copyWith(
+          splashFactory: NoSplash.splashFactory,
+          highlightColor: Colors.transparent,
         ),
-      ],
+        child: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          currentIndex: _currentIndex,
+          onTap: (index) {
+            setState(() {
+              _currentIndex = index;
+            });
+            panelManager.closePanel();
+          },
+          backgroundColor: const Color.fromARGB(255, 28, 34, 59),
+          selectedItemColor: Colors.blue,
+          unselectedItemColor: Colors.white,
+          items: const [
+            BottomNavigationBarItem(
+              icon: Icon(Icons.add),
+              label: "Start Workout",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.fitness_center),
+              label: "Exercises",
+            ),
+            BottomNavigationBarItem(
+              icon: Icon(Icons.access_time),
+              label: "History",
+            ),
+            BottomNavigationBarItem(icon: Icon(Icons.person), label: "Profile"),
+          ],
+        ),
+      ),
     );
   }
 }

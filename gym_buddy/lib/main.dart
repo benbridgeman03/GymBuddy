@@ -10,6 +10,7 @@ import 'views/main_app_shell.dart';
 import 'views/template_view.dart';
 import 'providers/exercise_provider.dart';
 import 'providers/panel_manager.dart';
+import 'providers/workout_manager.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -20,6 +21,7 @@ void main() async {
       providers: [
         ChangeNotifierProvider(create: (_) => ExerciseProvider()..init()),
         ChangeNotifierProvider(create: (_) => PanelManager()),
+        ChangeNotifierProvider(create: (_) => WorkoutManager()),
       ],
       child: const MyApp(),
     ),
@@ -52,6 +54,26 @@ class MyApp extends StatelessWidget {
             borderSide: BorderSide(color: Colors.blue),
           ),
           labelStyle: TextStyle(color: Colors.white70),
+        ),
+        dialogTheme: DialogThemeData(
+          backgroundColor: const Color.fromARGB(
+            255,
+            28,
+            34,
+            59,
+          ), // Dialog background
+          titleTextStyle: const TextStyle(
+            color: Colors.red, // Title color
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
+          ),
+          contentTextStyle: const TextStyle(
+            color: Colors.white, // Content color
+            fontSize: 16,
+          ),
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(16), // Rounded corners
+          ),
         ),
         elevatedButtonTheme: ElevatedButtonThemeData(
           style: ElevatedButton.styleFrom(
