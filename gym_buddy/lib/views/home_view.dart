@@ -4,6 +4,8 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gym_buddy/models/wokrout_template.dart';
 import 'package:gym_buddy/views/template_view.dart';
 import 'package:gym_buddy/models/set_type.dart';
+import 'package:provider/provider.dart';
+import '../providers/panel_manager.dart';
 
 class HomeView extends StatelessWidget {
   const HomeView({super.key});
@@ -15,6 +17,8 @@ class HomeView extends StatelessWidget {
     if (uid == null) {
       return const Center(child: Text('Please log in.'));
     }
+
+    final panelManager = Provider.of<PanelManager>(context, listen: false);
 
     return Scaffold(
       body: SafeArea(
@@ -35,7 +39,7 @@ class HomeView extends StatelessWidget {
                 width: double.infinity,
                 child: ElevatedButton(
                   onPressed: () {
-                    // TODO: navigate to workout screen
+                    panelManager.openPanel();
                   },
                   child: const Text('Start Empty Workout'),
                 ),
