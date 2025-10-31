@@ -46,7 +46,8 @@ class _AppShellState extends State<AppShell> {
               backdropEnabled: true,
               backdropTapClosesPanel: true,
               panelSnapping: true,
-              panel: const WorkoutView(),
+              panelBuilder: (ScrollController sc) =>
+                  WorkoutView(scrollController: sc),
             ),
           ),
         ],

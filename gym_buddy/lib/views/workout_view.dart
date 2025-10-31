@@ -12,7 +12,8 @@ import '../providers/workout_manager.dart';
 
 class WorkoutView extends StatefulWidget {
   final WorkoutTemplate? existingTemplate;
-  const WorkoutView({super.key, this.existingTemplate});
+  final ScrollController? scrollController;
+  const WorkoutView({super.key, this.existingTemplate, this.scrollController});
 
   @override
   State<WorkoutView> createState() => _WorkoutViewState();
@@ -100,7 +101,6 @@ class _WorkoutViewState extends State<WorkoutView> {
 
   @override
   void didChangeDependencies() {
-    print("Changed");
     super.didChangeDependencies();
     final panelManager = context.read<PanelManager>();
     final template = panelManager.activeTemplate;
@@ -125,139 +125,134 @@ class _WorkoutViewState extends State<WorkoutView> {
     }
 
     return Scaffold(
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(8.0),
-          child: Container(
-            color: Theme.of(context).scaffoldBackgroundColor,
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Container(
-                  width: 40,
-                  height: 5,
-                  margin: const EdgeInsets.only(bottom: 10),
-                  decoration: BoxDecoration(
-                    color: Colors.grey[400],
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+      body: ListView(
+        controller: widget.scrollController,
+        padding: const EdgeInsets.all(24),
+        children: [
+          Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: 40,
+                height: 5,
+                margin: const EdgeInsets.only(bottom: 10),
+                decoration: BoxDecoration(
+                  color: Colors.grey[400],
+                  borderRadius: BorderRadius.circular(12),
                 ),
-                const SizedBox(height: 8),
-                Align(
-                  alignment: Alignment.centerLeft,
-                  child: Row(
-                    children: [
-                      Text(
-                        _loadedTemplate?.name ?? _templateName,
-                        style: Theme.of(context).textTheme.headlineMedium
-                            ?.copyWith(fontWeight: FontWeight.bold),
-                      ),
-                      const Spacer(),
-                      Consumer<WorkoutManager>(
-                        builder: (_, controller, __) {
-                          final minutes =
-                              controller.elapsedTime.elapsed.inMinutes;
-                          final seconds =
-                              (controller.elapsedTime.elapsed.inSeconds % 60)
-                                  .toString()
-                                  .padLeft(2, '0');
-                          return Text(
-                            '$minutes:$seconds',
-                            style: Theme.of(context).textTheme.bodyMedium
-                                ?.copyWith(
-                                  color: Colors.green,
-                                  fontWeight: FontWeight.bold,
-                                ),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
+              ),
+              const SizedBox(height: 8),
+              Align(
+                alignment: Alignment.centerLeft,
+                child: Row(
+                  children: [
+                    Text(
+                      _loadedTemplate?.name ?? _templateName,
+                      style: Theme.of(context).textTheme.headlineMedium
+                          ?.copyWith(fontWeight: FontWeight.bold),
+                    ),
+                    const Spacer(),
+                    Consumer<WorkoutManager>(
+                      builder: (_, controller, __) {
+                        final minutes =
+                            controller.elapsedTime.elapsed.inMinutes;
+                        final seconds =
+                            (controller.elapsedTime.elapsed.inSeconds % 60)
+                                .toString()
+                                .padLeft(2, '0');
+                        return Text(
+                          '$minutes:$seconds',
+                          style: Theme.of(context).textTheme.bodyMedium
+                              ?.copyWith(
+                                color: Colors.green,
+                                fontWeight: FontWeight.bold,
+                              ),
+                        );
+                      },
+                    ),
+                  ],
                 ),
-                const SizedBox(height: 16),
-                ..._workoutExercises.asMap().entries.map((entry) {
-                  final index = entry.key;
-                  final exercise = entry.value;
-                  final initialSets =
-                      (_loadedTemplate != null &&
-                          index < _loadedTemplate!.exercises.length)
-                      ? _loadedTemplate!.exercises[index].sets
-                            .map(
-                              (s) => {
-                                'type': s.setType.name,
-                                'rest': s.restSeconds,
-                                'restFormatted':
-                                    '${s.restSeconds ~/ 60}:${(s.restSeconds % 60).toString().padLeft(2, '0')}',
-                                'reps': s.reps,
-                              },
-                            )
-                            .toList()
-                      : null;
+              ),
+              const SizedBox(height: 16),
+              ..._workoutExercises.asMap().entries.map((entry) {
+                final index = entry.key;
+                final exercise = entry.value;
+                final initialSets =
+                    (_loadedTemplate != null &&
+                        index < _loadedTemplate!.exercises.length)
+                    ? _loadedTemplate!.exercises[index].sets
+                          .map(
+                            (s) => {
+                              'type': s.setType.name,
+                              'rest': s.restSeconds,
+                              'restFormatted':
+                                  '${s.restSeconds ~/ 60}:${(s.restSeconds % 60).toString().padLeft(2, '0')}',
+                              'reps': s.reps,
+                            },
+                          )
+                          .toList()
+                    : null;
 
-                  return WorkoutExerciseTemplate(
-                    key: _editorKeys[index],
-                    exercise: exercise,
-                    initialSets: initialSets,
-                    onRemove: () => _removeExercise(exercise),
-                  );
-                }),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    onPressed: () => _openExercisePicker(context, uid),
-                    child: const Text('Add Exercise'),
-                  ),
+                return WorkoutExerciseTemplate(
+                  key: _editorKeys[index],
+                  exercise: exercise,
+                  initialSets: initialSets,
+                  onRemove: () => _removeExercise(exercise),
+                );
+              }),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  onPressed: () => _openExercisePicker(context, uid),
+                  child: const Text('Add Exercise'),
                 ),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                    ),
-                    onPressed: () {},
-                    child: const Text('Finish Workout'),
+              ),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.green,
                   ),
+                  onPressed: () {},
+                  child: const Text('Finish Workout'),
                 ),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                    ),
-                    onPressed: () async {
-                      final shouldCancel = await showDialog<bool>(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Cancel Workout?'),
-                          content: const Text(
-                            'Are you sure you want to cancel this workout? Your progress will be lost.',
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(false),
-                              child: const Text('No'),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(true),
-                              child: const Text('Yes'),
-                            ),
-                          ],
+              ),
+              SizedBox(
+                width: double.infinity,
+                child: ElevatedButton(
+                  style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                  onPressed: () async {
+                    final shouldCancel = await showDialog<bool>(
+                      context: context,
+                      builder: (context) => AlertDialog(
+                        title: const Text('Cancel Workout?'),
+                        content: const Text(
+                          'Are you sure you want to cancel this workout? Your progress will be lost.',
                         ),
-                      );
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(false),
+                            child: const Text('No'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.of(context).pop(true),
+                            child: const Text('Yes'),
+                          ),
+                        ],
+                      ),
+                    );
 
-                      if (shouldCancel ?? false) {
-                        reset(context);
-                        panelManager.closePanel();
-                      }
-                    },
-                    child: const Text('Cancel Workout'),
-                  ),
+                    if (shouldCancel ?? false) {
+                      reset(context);
+                      panelManager.closePanel();
+                    }
+                  },
+                  child: const Text('Cancel Workout'),
                 ),
-              ],
-            ),
+              ),
+            ],
           ),
-        ),
+        ],
       ),
     );
   }
