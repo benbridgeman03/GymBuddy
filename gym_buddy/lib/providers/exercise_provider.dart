@@ -12,7 +12,6 @@ class ExerciseProvider extends ChangeNotifier {
   List<Exercise> get exercises => _exercises;
   bool get isLoading => _isLoading;
 
-  /// Start listening to the user's exercise collection
   Future<void> init() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;

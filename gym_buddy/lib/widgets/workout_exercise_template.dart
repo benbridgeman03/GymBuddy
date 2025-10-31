@@ -272,6 +272,7 @@ class WorkoutExerciseTemplateState extends State<WorkoutExerciseTemplate> {
               ),
             );
           }),
+          const SizedBox(height: 8),
           //Add Set Button
           SizedBox(
             width: double.infinity,

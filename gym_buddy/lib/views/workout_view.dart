@@ -210,9 +210,6 @@ class _WorkoutViewState extends State<WorkoutView> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.green,
-                  ),
                   onPressed: () {},
                   child: const Text('Finish Workout'),
                 ),

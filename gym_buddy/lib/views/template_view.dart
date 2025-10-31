@@ -239,6 +239,8 @@ class _TemplateView extends State<TemplateView> {
                   );
                 }),
 
+                const SizedBox(height: 8),
+
                 // Add Exercise Button
                 SizedBox(
                   width: double.infinity,
@@ -249,40 +251,45 @@ class _TemplateView extends State<TemplateView> {
                     child: const Text('Add Exercise'),
                   ),
                 ),
-                SizedBox(
-                  width: double.infinity,
-                  child: ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.red,
-                    ),
-                    onPressed: () async {
-                      final shouldDelete = await showDialog<bool>(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Delete Template?'),
-                          content: const Text(
-                            'Are you sure you want to Delete this template?',
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(false),
-                              child: const Text('No'),
-                            ),
-                            TextButton(
-                              onPressed: () => Navigator.of(context).pop(true),
-                              child: const Text('Yes'),
-                            ),
-                          ],
-                        ),
-                      );
 
-                      if (shouldDelete ?? false) {
-                        _deleteTemplate();
-                      }
-                    },
-                    child: const Text('Delete Template'),
+                if (widget.existingTemplate != null)
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.red,
+                      ),
+                      onPressed: () async {
+                        final shouldDelete = await showDialog<bool>(
+                          context: context,
+                          builder: (context) => AlertDialog(
+                            title: const Text('Delete Template?'),
+                            content: const Text(
+                              'Are you sure you want to Delete this template?',
+                            ),
+                            actions: [
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(false),
+                                child: const Text('No'),
+                              ),
+                              TextButton(
+                                onPressed: () =>
+                                    Navigator.of(context).pop(true),
+                                child: const Text('Yes'),
+                              ),
+                            ],
+                          ),
+                        );
+
+                        if (shouldDelete ?? false) {
+                          _deleteTemplate();
+                        }
+                      },
+                      child: const Text('Delete Template'),
+                    ),
                   ),
-                ),
+
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(

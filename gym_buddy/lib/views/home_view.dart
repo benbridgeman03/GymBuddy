@@ -36,6 +36,7 @@ class HomeView extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
+              const SizedBox(height: 8),
               // Start Workout Button
               SizedBox(
                 width: double.infinity,

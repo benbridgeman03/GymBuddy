@@ -2,8 +2,10 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:gym_buddy/models/bodypart.dart';
+import 'package:provider/provider.dart';
 import '../models/exercise.dart';
 import '../services/string_extension.dart';
+import '../providers/exercise_provider.dart';
 
 class ExcersizesView extends StatelessWidget {
   const ExcersizesView({super.key});
@@ -15,7 +17,6 @@ class ExcersizesView extends StatelessWidget {
     if (uid == null) {
       return const Center(child: Text('Please log in.'));
     }
-
     return Scaffold(
       body: SafeArea(
         child: Padding(
@@ -56,24 +57,19 @@ class ExcersizesView extends StatelessWidget {
                 child: Material(
                   color: Colors.transparent,
                   clipBehavior: Clip.hardEdge,
-                  child: StreamBuilder(
-                    stream: FirebaseFirestore.instance
-                        .collection('users')
-                        .doc(uid)
-                        .collection('exercises')
-                        .orderBy('name')
-                        .snapshots(),
-                    builder: (context, snapshot) {
-                      if (snapshot.connectionState == ConnectionState.waiting) {
+                  child: Consumer<ExerciseProvider>(
+                    builder: (context, provider, child) {
+                      if (provider.isLoading) {
                         return const Center(child: CircularProgressIndicator());
                       }
-                      if (!snapshot.hasData || snapshot.data!.docs.isEmpty) {
+
+                      final exercises = provider.exercises;
+
+                      if (exercises.isEmpty) {
                         return const Center(child: Text('No exercises found.'));
                       }
-                      final exercises = snapshot.data!.docs
-                          .map((doc) => Exercise.fromDoc(doc))
-                          .toList();
 
+                      // Group by first letter
                       Map<String, List<Exercise>> grouped = {};
                       for (var ex in exercises) {
                         String firstLetter = ex.name[0].toUpperCase();
@@ -81,6 +77,7 @@ class ExcersizesView extends StatelessWidget {
                       }
 
                       final letters = grouped.keys.toList()..sort();
+
                       return ListView.builder(
                         itemCount: letters.length,
                         itemBuilder: (context, index) {
@@ -116,16 +113,22 @@ class ExcersizesView extends StatelessWidget {
                                       borderRadius: BorderRadius.circular(8),
                                       onTap: () => upsertExercise(
                                         context,
-                                        uid,
+                                        FirebaseAuth.instance.currentUser!.uid,
                                         existing: ex,
                                       ),
                                       child: Ink(
                                         decoration: BoxDecoration(
-                                          color: Colors.white.withValues(
-                                            alpha: 0.05,
+                                          color: const Color.fromARGB(
+                                            255,
+                                            8,
+                                            28,
+                                            70,
                                           ),
                                           borderRadius: BorderRadius.circular(
-                                            8,
+                                            12,
+                                          ),
+                                          border: Border.all(
+                                            color: Colors.white24,
                                           ),
                                         ),
                                         child: ListTile(
@@ -138,17 +141,15 @@ class ExcersizesView extends StatelessWidget {
                                             style: const TextStyle(
                                               color: Colors.white,
                                               fontWeight: FontWeight.bold,
-                                              fontSize: 16, // adjust as needed
+                                              fontSize: 16,
                                             ),
                                           ),
                                           subtitle: Text(
                                             '${ex.bodyPart.name.capitalize()} • ${ex.category.name.capitalize()}',
                                             style: TextStyle(
-                                              color: Colors
-                                                  .grey[400], // slightly lighter color
-                                              fontSize: 12, // smaller font
-                                              fontStyle: FontStyle
-                                                  .italic, // optional styling
+                                              color: Colors.grey[400],
+                                              fontSize: 12,
+                                              fontStyle: FontStyle.italic,
                                             ),
                                           ),
                                         ),
