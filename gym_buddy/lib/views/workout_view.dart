@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gym_buddy/models/exercise.dart';
+import 'package:gym_buddy/providers/exercise_provider.dart';
 import 'package:gym_buddy/widgets/exercise_picker.dart';
 import 'package:gym_buddy/widgets/workout_exercise_template.dart';
 import 'package:provider/provider.dart';
@@ -45,15 +46,8 @@ class _WorkoutViewState extends State<WorkoutView> {
     Exercise? selectedExerciseId = existing?.exercise;
     String exerciseName = existing?.exercise.name ?? '';
 
-    final snapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .collection('exercises')
-        .get();
-
-    final exercises = snapshot.docs
-        .map((doc) => Exercise.fromDoc(doc))
-        .toList();
+    final provider = context.read<ExerciseProvider>();
+    final exercises = provider.exercises;
 
     final selected = await showDialog<String>(
       context: context,

@@ -4,7 +4,9 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gym_buddy/models/exercise.dart';
 import 'package:gym_buddy/models/wokrout_template.dart';
 import 'package:gym_buddy/widgets/workout_exercise_template.dart';
+import 'package:provider/provider.dart';
 import '../widgets/exercise_picker.dart';
+import '../providers/exercise_provider.dart';
 
 class TemplateView extends StatefulWidget {
   final WorkoutTemplate? existingTemplate;
@@ -41,16 +43,8 @@ class _TemplateView extends State<TemplateView> {
     Exercise? selectedExerciseId = existing?.exercise;
     String exerciseName = existing?.exercise.name ?? '';
 
-    // Load exercises from Firestore
-    final snapshot = await FirebaseFirestore.instance
-        .collection('users')
-        .doc(uid)
-        .collection('exercises')
-        .get();
-
-    final exercises = snapshot.docs
-        .map((doc) => Exercise.fromDoc(doc))
-        .toList();
+    final provider = context.read<ExerciseProvider>();
+    final exercises = provider.exercises;
 
     final selected = await showDialog<String>(
       context: context,
