@@ -34,7 +34,14 @@ class ExerciseProvider extends ChangeNotifier {
         });
   }
 
-  /// Dispose listener when not needed
+  void clear() {
+    _subscription?.cancel();
+    _subscription = null;
+    _exercises.clear();
+    _isLoading = false;
+    notifyListeners();
+  }
+
   @override
   void dispose() {
     _subscription?.cancel();

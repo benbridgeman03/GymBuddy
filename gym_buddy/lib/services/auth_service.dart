@@ -1,5 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'seed_data.dart';
+import '../providers/exercise_provider.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -33,17 +34,19 @@ class AuthService {
   }
 
   /// Sign in existing user
-  Future<User?> signIn(String email, String password) async {
+  Future<User?> signIn(String email, String password, context) async {
     final cred = await _auth.signInWithEmailAndPassword(
       email: email,
       password: password,
     );
+    context.read<ExerciseProvider>().init();
     return cred.user;
   }
 
   /// Sign out
-  Future<void> signOut() async {
+  Future<void> signOut(context) async {
     await _auth.signOut();
+    context.read<ExerciseProvider>().clear();
   }
 
   /// Stream for current user changes (login/logout)

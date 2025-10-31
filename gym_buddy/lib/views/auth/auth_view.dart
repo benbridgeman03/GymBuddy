@@ -30,11 +30,12 @@ class _AuthViewState extends State<AuthView> {
         final user = await _auth.signIn(
           _emailController.text.trim(),
           _passwordController.text.trim(),
+          context,
         );
 
         if (user != null && !user.emailVerified) {
           // Sign out and go to confirm email page
-          await _auth.signOut();
+          await _auth.signOut(context);
           if (mounted) {
             Navigator.pushReplacementNamed(context, '/confirm-email');
           }
