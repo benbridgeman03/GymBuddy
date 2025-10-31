@@ -5,6 +5,7 @@ import 'package:gym_buddy/models/wokrout_template.dart';
 import 'package:gym_buddy/providers/workout_manager.dart';
 import 'package:gym_buddy/views/template_view.dart';
 import 'package:gym_buddy/models/set_type.dart';
+import 'package:gym_buddy/views/workout_view.dart';
 import 'package:provider/provider.dart';
 import '../providers/panel_manager.dart';
 
@@ -147,53 +148,63 @@ class HomeView extends StatelessWidget {
                                         padding: const EdgeInsets.symmetric(
                                           vertical: 4.0,
                                         ),
-                                        child: Row(
-                                          mainAxisAlignment:
-                                              i == template.exercises.length - 1
-                                              ? MainAxisAlignment.spaceBetween
-                                              : MainAxisAlignment.start,
+                                        child: Column(
                                           children: [
                                             Row(
+                                              mainAxisAlignment:
+                                                  i ==
+                                                      template
+                                                              .exercises
+                                                              .length -
+                                                          1
+                                                  ? MainAxisAlignment
+                                                        .spaceBetween
+                                                  : MainAxisAlignment.start,
                                               children: [
-                                                Text(
-                                                  template
-                                                      .exercises[i]
-                                                      .exercise
-                                                      .name,
-                                                  style: const TextStyle(
-                                                    color: Colors.white70,
-                                                    fontSize: 16,
-                                                  ),
-                                                ),
-                                                const SizedBox(width: 4),
-                                                Text(
-                                                  '× ${template.exercises[i].sets.where((ex) => ex.setType != SetType.warmup).length}',
-                                                  style: const TextStyle(
-                                                    color: Colors.white70,
-                                                    fontSize: 16,
-                                                  ),
-                                                ),
-                                              ],
-                                            ),
-                                            if (i ==
-                                                template.exercises.length - 1)
-                                              TextButton(
-                                                style: TextButton.styleFrom(
-                                                  padding:
-                                                      const EdgeInsets.symmetric(
-                                                        horizontal: 6,
-                                                        vertical: 2,
+                                                Row(
+                                                  children: [
+                                                    Text(
+                                                      template
+                                                          .exercises[i]
+                                                          .exercise
+                                                          .name,
+                                                      style: const TextStyle(
+                                                        color: Colors.white70,
+                                                        fontSize: 16,
                                                       ),
-                                                  minimumSize: const Size(0, 0),
-                                                  tapTargetSize:
-                                                      MaterialTapTargetSize
-                                                          .shrinkWrap,
-                                                  foregroundColor: Colors
-                                                      .white, // ripple color
-                                                  overlayColor: Colors
-                                                      .white24, // subtle ripple on press
-                                                  shape:
-                                                      const RoundedRectangleBorder(
+                                                    ),
+                                                    const SizedBox(width: 4),
+                                                    Text(
+                                                      '× ${template.exercises[i].sets.where((ex) => ex.setType != SetType.warmup).length}',
+                                                      style: const TextStyle(
+                                                        color: Colors.white70,
+                                                        fontSize: 16,
+                                                      ),
+                                                    ),
+                                                  ],
+                                                ),
+                                                if (i ==
+                                                    template.exercises.length -
+                                                        1)
+                                                  TextButton(
+                                                    style: TextButton.styleFrom(
+                                                      padding:
+                                                          const EdgeInsets.symmetric(
+                                                            horizontal: 6,
+                                                            vertical: 2,
+                                                          ),
+                                                      minimumSize: const Size(
+                                                        0,
+                                                        0,
+                                                      ),
+                                                      tapTargetSize:
+                                                          MaterialTapTargetSize
+                                                              .shrinkWrap,
+                                                      foregroundColor: Colors
+                                                          .white, // ripple color
+                                                      overlayColor: Colors
+                                                          .white24, // subtle ripple on press
+                                                      shape: const RoundedRectangleBorder(
                                                         borderRadius:
                                                             BorderRadius.all(
                                                               Radius.circular(
@@ -201,35 +212,54 @@ class HomeView extends StatelessWidget {
                                                               ),
                                                             ),
                                                       ),
-                                                ),
-                                                onPressed: () {
-                                                  Navigator.push(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder: (context) =>
-                                                          TemplateView(
-                                                            existingTemplate:
-                                                                template,
-                                                          ),
                                                     ),
-                                                  );
-                                                },
-                                                child: const Text(
-                                                  'Edit',
-                                                  style: TextStyle(
-                                                    color: Colors
-                                                        .blue, // slightly muted
-                                                    fontSize: 15,
-                                                    decoration: TextDecoration
-                                                        .underline, // like a text link
-                                                    decorationColor:
-                                                        Colors.blue,
+                                                    onPressed: () {
+                                                      Navigator.push(
+                                                        context,
+                                                        MaterialPageRoute(
+                                                          builder: (context) =>
+                                                              TemplateView(
+                                                                existingTemplate:
+                                                                    template,
+                                                              ),
+                                                        ),
+                                                      );
+                                                    },
+                                                    child: const Text(
+                                                      'Edit',
+                                                      style: TextStyle(
+                                                        color: Colors
+                                                            .blue, // slightly muted
+                                                        fontSize: 15,
+                                                        decoration: TextDecoration
+                                                            .underline, // like a text link
+                                                        decorationColor:
+                                                            Colors.blue,
+                                                      ),
+                                                    ),
                                                   ),
-                                                ),
-                                              ),
+                                              ],
+                                            ),
                                           ],
                                         ),
                                       ),
+                                    const SizedBox(height: 8),
+                                    SizedBox(
+                                      width: double.infinity,
+                                      height: 34,
+                                      child: ElevatedButton(
+                                        onPressed: () {
+                                          context
+                                              .read<WorkoutManager>()
+                                              .start();
+                                          context
+                                              .read<PanelManager>()
+                                              .openWithTemplate(template);
+                                        },
+
+                                        child: const Text('Start Workout'),
+                                      ),
+                                    ),
                                   ],
                                 ),
                               ],
@@ -241,14 +271,6 @@ class HomeView extends StatelessWidget {
                   },
                 ),
               ),
-              ElevatedButton(
-                onPressed: () async {
-                  await FirebaseAuth.instance.signOut();
-                  Navigator.pushReplacementNamed(context, '/');
-                },
-                child: const Text('Logout'),
-              ),
-              const SizedBox(height: 24),
             ],
           ),
         ),

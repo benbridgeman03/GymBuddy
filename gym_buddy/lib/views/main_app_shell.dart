@@ -6,6 +6,7 @@ import 'package:provider/provider.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 import '/providers/panel_manager.dart';
 import 'package:gym_buddy/providers/workout_manager.dart';
+import 'profile_view.dart';
 
 class AppShell extends StatefulWidget {
   const AppShell({super.key});
@@ -21,7 +22,7 @@ class _AppShellState extends State<AppShell> {
     const HomeView(),
     const ExcersizesView(),
     const Center(child: Text("History Page")), // placeholder for now
-    const Center(child: Text("Profile Page")), // placeholder for now
+    const ProfileView(), // placeholder for now
   ];
 
   Widget build(BuildContext context) {
@@ -37,7 +38,7 @@ class _AppShellState extends State<AppShell> {
             alignment: Alignment.bottomCenter,
             child: SlidingUpPanel(
               controller: panelManager.panelController,
-              minHeight: workoutManager.isRunning ? 50 : 0,
+              minHeight: workoutManager.isRunning ? 100 : 0,
               maxHeight: MediaQuery.of(context).size.height * 0.85,
               borderRadius: const BorderRadius.vertical(
                 top: Radius.circular(20),

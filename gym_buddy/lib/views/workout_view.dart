@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/material.dart';
 import 'package:gym_buddy/models/exercise.dart';
 import 'package:gym_buddy/widgets/exercise_picker.dart';
@@ -24,8 +22,9 @@ class _WorkoutViewState extends State<WorkoutView> {
   final List<Exercise> _workoutExercises = [];
   final List<GlobalKey<WorkoutExerciseTemplateState>> _editorKeys = [];
   bool workoutStarted = false;
-
   final String _templateName = 'Empty Workout';
+
+  WorkoutTemplate? _loadedTemplate;
 
   void reset(BuildContext context) {
     context.read<WorkoutManager>().reset();
@@ -33,6 +32,7 @@ class _WorkoutViewState extends State<WorkoutView> {
       _workoutExercises.clear();
       _editorKeys.clear();
       workoutStarted = false;
+      _loadedTemplate = null;
     });
   }
 
@@ -44,7 +44,6 @@ class _WorkoutViewState extends State<WorkoutView> {
     Exercise? selectedExerciseId = existing?.exercise;
     String exerciseName = existing?.exercise.name ?? '';
 
-    // Load exercises from Firestore
     final snapshot = await FirebaseFirestore.instance
         .collection('users')
         .doc(uid)
@@ -87,15 +86,43 @@ class _WorkoutViewState extends State<WorkoutView> {
     }
   }
 
+  void _loadTemplateExercises(WorkoutTemplate template) {
+    if (_loadedTemplate == template) return;
+    _loadedTemplate = template;
+
+    _workoutExercises.clear();
+    _editorKeys.clear();
+
+    for (final workoutExercise in template.exercises) {
+      _addExercise(workoutExercise.exercise);
+    }
+  }
+
+  @override
+  void didChangeDependencies() {
+    print("Changed");
+    super.didChangeDependencies();
+    final panelManager = context.read<PanelManager>();
+    final template = panelManager.activeTemplate;
+
+    if (template != null) {
+      _loadTemplateExercises(template);
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final uid = FirebaseAuth.instance.currentUser?.uid;
-
     if (uid == null) {
       return const Center(child: Text('Please log in.'));
     }
 
-    final panelManager = Provider.of<PanelManager>(context, listen: false);
+    final panelManager = context.watch<PanelManager>();
+    final template = panelManager.activeTemplate;
+
+    if (template != null && _loadedTemplate != template) {
+      _loadTemplateExercises(template);
+    }
 
     return Scaffold(
       body: SingleChildScrollView(
@@ -107,7 +134,6 @@ class _WorkoutViewState extends State<WorkoutView> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Grab handle
                 Container(
                   width: 40,
                   height: 5,
@@ -119,15 +145,15 @@ class _WorkoutViewState extends State<WorkoutView> {
                 ),
                 const SizedBox(height: 8),
                 Align(
-                  alignment: Alignment.centerLeft, // Aligns text to the left
+                  alignment: Alignment.centerLeft,
                   child: Row(
                     children: [
                       Text(
-                        _templateName,
+                        _loadedTemplate?.name ?? _templateName,
                         style: Theme.of(context).textTheme.headlineMedium
                             ?.copyWith(fontWeight: FontWeight.bold),
                       ),
-                      Spacer(),
+                      const Spacer(),
                       Consumer<WorkoutManager>(
                         builder: (_, controller, __) {
                           final minutes =
@@ -149,15 +175,14 @@ class _WorkoutViewState extends State<WorkoutView> {
                     ],
                   ),
                 ),
-
                 const SizedBox(height: 16),
                 ..._workoutExercises.asMap().entries.map((entry) {
                   final index = entry.key;
                   final exercise = entry.value;
                   final initialSets =
-                      (widget.existingTemplate != null &&
-                          index < widget.existingTemplate!.exercises.length)
-                      ? widget.existingTemplate!.exercises[index].sets
+                      (_loadedTemplate != null &&
+                          index < _loadedTemplate!.exercises.length)
+                      ? _loadedTemplate!.exercises[index].sets
                             .map(
                               (s) => {
                                 'type': s.setType.name,
@@ -174,19 +199,13 @@ class _WorkoutViewState extends State<WorkoutView> {
                     key: _editorKeys[index],
                     exercise: exercise,
                     initialSets: initialSets,
-                    onRemove: () {
-                      setState(() {
-                        _removeExercise(exercise);
-                      });
-                    },
+                    onRemove: () => _removeExercise(exercise),
                   );
                 }),
                 SizedBox(
                   width: double.infinity,
                   child: ElevatedButton(
-                    onPressed: () {
-                      _openExercisePicker(context, uid);
-                    },
+                    onPressed: () => _openExercisePicker(context, uid),
                     child: const Text('Add Exercise'),
                   ),
                 ),
