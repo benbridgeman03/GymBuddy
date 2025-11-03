@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:gym_buddy/models/wokrout_template.dart';
+import 'package:gym_buddy/models/workout_template.dart';
 import 'package:sliding_up_panel/sliding_up_panel.dart';
 
 class PanelManager with ChangeNotifier {

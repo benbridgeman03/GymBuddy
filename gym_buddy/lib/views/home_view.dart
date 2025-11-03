@@ -1,11 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:gym_buddy/models/wokrout_template.dart';
+import 'package:gym_buddy/models/workout_template.dart';
 import 'package:gym_buddy/providers/workout_manager.dart';
 import 'package:gym_buddy/views/template_view.dart';
 import 'package:gym_buddy/models/set_type.dart';
-import 'package:gym_buddy/views/workout_view.dart';
 import 'package:provider/provider.dart';
 import '../providers/panel_manager.dart';
 

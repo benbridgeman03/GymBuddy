@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:gym_buddy/models/exercise.dart';
-import 'package:gym_buddy/models/wokrout_template.dart';
+import 'package:gym_buddy/models/workout_template.dart';
 import 'package:gym_buddy/services/min_sec_input_formatter.dart';
 import 'package:gym_buddy/models/set_type.dart';
 

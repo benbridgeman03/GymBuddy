@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:gym_buddy/models/exercise.dart';
-import 'package:gym_buddy/models/wokrout_template.dart';
+import 'package:gym_buddy/models/workout_template.dart';
 import 'package:gym_buddy/widgets/workout_exercise_template.dart';
 import 'package:provider/provider.dart';
 import '../widgets/exercise_picker.dart';

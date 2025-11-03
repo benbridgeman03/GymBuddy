@@ -1,11 +1,14 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gym_buddy/models/exercise.dart';
+import 'package:gym_buddy/models/workout_log.dart';
 import 'package:gym_buddy/providers/exercise_provider.dart';
 import 'package:gym_buddy/widgets/exercise_picker.dart';
+import 'package:gym_buddy/widgets/workout_exercise_log_template.dart';
 import 'package:gym_buddy/widgets/workout_exercise_template.dart';
 import 'package:provider/provider.dart';
 import '../providers/panel_manager.dart';
-import 'package:gym_buddy/models/wokrout_template.dart';
+import 'package:gym_buddy/models/workout_template.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../providers/workout_manager.dart';
 
@@ -20,7 +23,7 @@ class WorkoutView extends StatefulWidget {
 
 class _WorkoutViewState extends State<WorkoutView> {
   final List<Exercise> _workoutExercises = [];
-  final List<GlobalKey<WorkoutExerciseTemplateState>> _editorKeys = [];
+  final List<GlobalKey<WorkoutExerciseLogTemplateState>> _editorKeys = [];
   bool workoutStarted = false;
   final String _templateName = 'Empty Workout';
 
@@ -65,7 +68,7 @@ class _WorkoutViewState extends State<WorkoutView> {
   void _addExercise(Exercise exercise) {
     setState(() {
       _workoutExercises.add(exercise);
-      _editorKeys.add(GlobalKey<WorkoutExerciseTemplateState>());
+      _editorKeys.add(GlobalKey<WorkoutExerciseLogTemplateState>());
     });
   }
 
@@ -100,6 +103,55 @@ class _WorkoutViewState extends State<WorkoutView> {
     if (template != null) {
       _loadTemplateExercises(template);
     }
+  }
+
+  void _saveWorkout() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+    final existingId = widget.existingTemplate?.id;
+
+    final provider = context.read<WorkoutManager>();
+    final startedAt = provider.startedAt ?? DateTime.now();
+
+    final exercises = <WorkoutExerciseLog>[];
+
+    for (var i = 0; i < _editorKeys.length; i++) {
+      final state = _editorKeys[i].currentState;
+      if (state == null) continue;
+      exercises.add(state.toWorkoutExerciseLog());
+    }
+
+    if (exercises.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Template cannot be empty!')),
+      );
+      return;
+    }
+
+    final template = WorkoutSession(
+      id: '',
+      exercises: exercises,
+      templateId: '',
+      startedAt: startedAt,
+      completedAt: DateTime.now(),
+    );
+
+    final templateData = template.toMap();
+
+    await FirebaseFirestore.instance
+        .collection('users')
+        .doc(uid)
+        .collection('workouts')
+        .add(templateData);
+
+    if (mounted) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Workout saved successfully!')),
+      );
+      Navigator.pushReplacementNamed(context, '/home');
+    }
+
+    provider.reset();
   }
 
   @override
@@ -185,7 +237,7 @@ class _WorkoutViewState extends State<WorkoutView> {
                           .toList()
                     : null;
 
-                return WorkoutExerciseTemplate(
+                return WorkoutExerciseLogTemplate(
                   key: _editorKeys[index],
                   exercise: exercise,
                   initialSets: initialSets,
@@ -202,7 +254,7 @@ class _WorkoutViewState extends State<WorkoutView> {
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
-                  onPressed: () {},
+                  onPressed: () => _saveWorkout(),
                   child: const Text('Finish Workout'),
                 ),
               ),

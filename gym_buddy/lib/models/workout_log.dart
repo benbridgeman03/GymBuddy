@@ -1,16 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:gym_buddy/models/exercise.dart';
 import 'set_type.dart';
 
 //One set of an exercise
 class WorkoutSetLog {
-  final int setIndex;
   final int reps;
   final double weight;
   final int restSeconds;
   final SetType setType;
 
   WorkoutSetLog({
-    required this.setIndex,
     required this.reps,
     required this.weight,
     required this.restSeconds,
@@ -18,7 +17,6 @@ class WorkoutSetLog {
   });
 
   Map<String, dynamic> toMap() => {
-    'setIndex': setIndex,
     'reps': reps,
     'weight': weight,
     'restSeconds': restSeconds,
@@ -26,7 +24,6 @@ class WorkoutSetLog {
   };
 
   factory WorkoutSetLog.fromMap(Map<String, dynamic> data) => WorkoutSetLog(
-    setIndex: data['setIndex'],
     reps: data['reps'],
     weight: (data['weight'] as num).toDouble(),
     restSeconds: data['restSeconds'],
@@ -36,26 +33,19 @@ class WorkoutSetLog {
 
 //One exercise in a workout session
 class WorkoutExerciseLog {
-  final String exerciseId;
-  final String name;
+  final Exercise exercise;
   final List<WorkoutSetLog> sets;
 
-  WorkoutExerciseLog({
-    required this.exerciseId,
-    required this.name,
-    required this.sets,
-  });
+  WorkoutExerciseLog({required this.exercise, required this.sets});
 
   Map<String, dynamic> toMap() => {
-    'exerciseId': exerciseId,
-    'name': name,
+    'exercise': exercise.toMap(),
     'sets': sets.map((s) => s.toMap()).toList(),
   };
 
   factory WorkoutExerciseLog.fromMap(Map<String, dynamic> data) =>
       WorkoutExerciseLog(
-        exerciseId: data['exerciseId'],
-        name: data['name'],
+        exercise: data['exercise'],
         sets: (data['sets'] as List<dynamic>)
             .map((s) => WorkoutSetLog.fromMap(s))
             .toList(),

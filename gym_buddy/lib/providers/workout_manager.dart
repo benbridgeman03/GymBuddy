@@ -3,18 +3,21 @@ import 'package:flutter/material.dart';
 
 class WorkoutManager extends ChangeNotifier {
   final Stopwatch elapsedTime = Stopwatch();
+  DateTime? startedAt;
   Timer? _timer;
   bool isRunning = false;
 
   void start() {
     if (isRunning) return;
     isRunning = true;
+    startedAt = DateTime.now();
     elapsedTime.start();
     _timer = Timer.periodic(Duration(seconds: 1), (_) => notifyListeners());
   }
 
   void stop() {
     isRunning = false;
+    startedAt = null;
     elapsedTime.stop();
     _timer?.cancel();
     notifyListeners();
@@ -29,6 +32,7 @@ class WorkoutManager extends ChangeNotifier {
     elapsedTime.reset();
 
     isRunning = false;
+    startedAt = null;
 
     notifyListeners();
   }
