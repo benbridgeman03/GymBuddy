@@ -5,7 +5,7 @@ import 'set_type.dart';
 class WorkoutSetLog {
   final int setIndex;
   final int reps;
-  final double weight; // can be 0 for bodyweight
+  final double weight;
   final int restSeconds;
   final SetType setType;
 
@@ -65,7 +65,7 @@ class WorkoutExerciseLog {
 //One full workout session log
 class WorkoutSession {
   final String id;
-  final String templateId; // link back to template
+  final String? templateId;
   final DateTime startedAt;
   final DateTime? completedAt;
   final List<WorkoutExerciseLog> exercises;
