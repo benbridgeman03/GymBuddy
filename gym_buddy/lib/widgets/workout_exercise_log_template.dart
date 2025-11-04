@@ -132,9 +132,8 @@ class WorkoutExerciseLogTemplateState
           //Header Row
           Row(
             children: const [
-              SizedBox(width: 18),
-              SizedBox(
-                width: 80, // Type
+              Expanded(
+                flex: 2, // Type
                 child: Text(
                   'Type',
                   textAlign: TextAlign.center,
@@ -144,10 +143,8 @@ class WorkoutExerciseLogTemplateState
                   ),
                 ),
               ),
-              SizedBox(width: 12), // optional spacing
-
-              SizedBox(
-                width: 60, // Weight
+              Expanded(
+                flex: 1, // Weight
                 child: Text(
                   'Weight',
                   textAlign: TextAlign.center,
@@ -157,10 +154,8 @@ class WorkoutExerciseLogTemplateState
                   ),
                 ),
               ),
-              SizedBox(width: 12), // optional spacing
-
-              SizedBox(
-                width: 60, // Reps
+              Expanded(
+                flex: 1, // Reps
                 child: Text(
                   'Reps',
                   textAlign: TextAlign.center,
@@ -170,17 +165,11 @@ class WorkoutExerciseLogTemplateState
                   ),
                 ),
               ),
-              SizedBox(width: 12), // optional spacing
-
-              SizedBox(
-                width: 60, // Rest
-                child: Text(
-                  'Rest (s)',
-                  textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontWeight: FontWeight.bold,
-                  ),
+              Expanded(
+                flex: 1, // fixed width
+                child: Icon(
+                  Icons.check, // or Icons.done
+                  color: Colors.grey,
                 ),
               ),
             ],
@@ -215,142 +204,161 @@ class WorkoutExerciseLogTemplateState
                 },
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    return Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    return Column(
                       children: [
-                        // Type
-                        Expanded(
-                          flex: 2,
-                          child: DropdownButtonFormField<String>(
-                            value: setTypesMap.entries
-                                .firstWhere(
-                                  (e) => e.value.name == set['type'],
-                                  orElse: () => setTypesMap.entries.firstWhere(
-                                    (e) => e.key == 'Working',
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            // Type
+                            Expanded(
+                              flex: 2,
+                              child: DropdownButtonFormField<String>(
+                                value: setTypesMap.entries
+                                    .firstWhere(
+                                      (e) => e.value.name == set['type'],
+                                      orElse: () =>
+                                          setTypesMap.entries.firstWhere(
+                                            (e) => e.key == 'Working',
+                                          ),
+                                    )
+                                    .key,
+                                decoration: const InputDecoration(
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.symmetric(
+                                    vertical: 8,
+                                    horizontal: 4,
                                   ),
-                                )
-                                .key,
-                            decoration: const InputDecoration(
-                              isDense: true,
-                              contentPadding: EdgeInsets.symmetric(
-                                vertical: 8,
-                                horizontal: 4,
-                              ),
-                              border: OutlineInputBorder(),
-                            ),
-                            dropdownColor: Colors.blueGrey[900],
-                            style: const TextStyle(color: Colors.white),
-                            items: setTypesMap.keys
-                                .map(
-                                  (label) => DropdownMenuItem(
-                                    value: label,
-                                    child: Text(
-                                      label,
-                                      style: const TextStyle(
-                                        color: Colors.white,
+                                  border: OutlineInputBorder(),
+                                ),
+                                dropdownColor: Colors.blueGrey[900],
+                                style: const TextStyle(color: Colors.white),
+                                items: setTypesMap.keys
+                                    .map(
+                                      (label) => DropdownMenuItem(
+                                        value: label,
+                                        child: Text(
+                                          label,
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                    )
+                                    .toList(),
+                                onChanged: (value) {
+                                  setState(() {
+                                    set['type'] = setTypesMap[value!]!.name;
+                                  });
+                                },
+                              ),
+                            ),
+
+                            const SizedBox(width: 4),
+
+                            // Weight
+                            Expanded(
+                              flex: 1,
+                              child: TextField(
+                                controller: weightControllers[index],
+                                keyboardType: TextInputType.number,
+                                textAlign: TextAlign.center,
+                                decoration: const InputDecoration(
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.symmetric(
+                                    vertical: 8,
                                   ),
-                                )
-                                .toList(),
-                            onChanged: (value) {
-                              setState(() {
-                                set['type'] = setTypesMap[value!]!.name;
-                              });
-                            },
-                          ),
-                        ),
-
-                        const SizedBox(width: 4),
-
-                        // Weight
-                        Expanded(
-                          flex: 1,
-                          child: TextField(
-                            controller: weightControllers[index],
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            decoration: const InputDecoration(
-                              isDense: true,
-                              contentPadding: EdgeInsets.symmetric(vertical: 8),
-                              border: OutlineInputBorder(),
-                              hintText: '0',
-                              hintStyle: TextStyle(color: Colors.grey),
+                                  border: OutlineInputBorder(),
+                                  hintText: '0',
+                                  hintStyle: TextStyle(color: Colors.grey),
+                                ),
+                                onChanged: (value) => sets[index]['weight'] =
+                                    double.tryParse(value) ?? 0.0,
+                              ),
                             ),
-                            onChanged: (value) => sets[index]['weight'] =
-                                double.tryParse(value) ?? 0.0,
-                          ),
-                        ),
 
-                        const SizedBox(width: 4),
+                            const SizedBox(width: 4),
 
-                        // Reps
-                        Expanded(
-                          flex: 1,
-                          child: TextField(
-                            controller: repsControllers[index],
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            decoration: const InputDecoration(
-                              isDense: true,
-                              contentPadding: EdgeInsets.symmetric(vertical: 8),
-                              border: OutlineInputBorder(),
-                              hintText: '8',
-                              hintStyle: TextStyle(color: Colors.grey),
+                            // Reps
+                            Expanded(
+                              flex: 1,
+                              child: TextField(
+                                controller: repsControllers[index],
+                                keyboardType: TextInputType.number,
+                                textAlign: TextAlign.center,
+                                decoration: const InputDecoration(
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.symmetric(
+                                    vertical: 8,
+                                  ),
+                                  border: OutlineInputBorder(),
+                                  hintText: '8',
+                                  hintStyle: TextStyle(color: Colors.grey),
+                                ),
+                                onChanged: (value) => sets[index]['reps'] =
+                                    int.tryParse(value) ?? 0,
+                              ),
                             ),
-                            onChanged: (value) =>
-                                sets[index]['reps'] = int.tryParse(value) ?? 0,
-                          ),
-                        ),
 
-                        const SizedBox(width: 4),
+                            const SizedBox(width: 4),
 
-                        // Rest
-                        Expanded(
-                          flex: 1,
-                          child: TextField(
-                            controller: restControllers[index],
-                            keyboardType: TextInputType.number,
-                            textAlign: TextAlign.center,
-                            inputFormatters: [MinSecInputFormatter()],
-                            decoration: const InputDecoration(
-                              isDense: true,
-                              contentPadding: EdgeInsets.symmetric(vertical: 8),
-                              border: OutlineInputBorder(),
-                              hintText: '3:00',
-                              hintStyle: TextStyle(color: Colors.grey),
+                            // Rest
+
+                            // Complete Checkbox
+                            Expanded(
+                              flex: 1,
+                              child: Center(
+                                child: Checkbox(
+                                  value: sets[index]['isComplete'] ?? false,
+                                  activeColor: Colors.green,
+                                  onChanged: (bool? value) {
+                                    setState(() {
+                                      sets[index]['isComplete'] =
+                                          value ?? false;
+                                    });
+                                  },
+                                ),
+                              ),
                             ),
-                            onChanged: (value) {
-                              sets[index]['restFormatted'] = value;
-                              final parts = value.split(':');
-                              if (parts.length == 2) {
-                                final min = int.tryParse(parts[0]) ?? 0;
-                                final sec = int.tryParse(parts[1]) ?? 0;
-                                sets[index]['rest'] = min * 60 + sec;
-                              } else {
-                                sets[index]['rest'] =
-                                    int.tryParse(parts[0]) ?? 0;
-                              }
-                            },
-                          ),
+                            const SizedBox(width: 4),
+                          ],
                         ),
-
-                        const SizedBox(width: 4),
-
-                        // Complete Checkbox
-                        Expanded(
-                          flex: 1,
-                          child: Center(
-                            child: Checkbox(
-                              value: sets[index]['isComplete'] ?? false,
-                              activeColor: Colors.green,
-                              onChanged: (bool? value) {
-                                setState(() {
-                                  sets[index]['isComplete'] = value ?? false;
-                                });
-                              },
+                        Row(
+                          children: [
+                            Expanded(
+                              flex: 1,
+                              child: TextField(
+                                controller: restControllers[index],
+                                keyboardType: TextInputType.number,
+                                textAlign: TextAlign.center,
+                                inputFormatters: [MinSecInputFormatter()],
+                                decoration: const InputDecoration(
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.symmetric(
+                                    vertical: 4,
+                                    horizontal: 6,
+                                  ),
+                                  border: OutlineInputBorder(),
+                                  hintText: '3:00',
+                                  hintStyle: TextStyle(
+                                    color: Colors.grey,
+                                    fontSize: 12,
+                                  ),
+                                ),
+                                onChanged: (value) {
+                                  sets[index]['restFormatted'] = value;
+                                  final parts = value.split(':');
+                                  if (parts.length == 2) {
+                                    final min = int.tryParse(parts[0]) ?? 0;
+                                    final sec = int.tryParse(parts[1]) ?? 0;
+                                    sets[index]['rest'] = min * 60 + sec;
+                                  } else {
+                                    sets[index]['rest'] =
+                                        int.tryParse(parts[0]) ?? 0;
+                                  }
+                                },
+                              ),
                             ),
-                          ),
+                          ],
                         ),
                       ],
                     );
