@@ -3,6 +3,7 @@ import 'package:gym_buddy/models/exercise.dart';
 import 'package:gym_buddy/models/workout_log.dart';
 import 'package:gym_buddy/services/min_sec_input_formatter.dart';
 import 'package:gym_buddy/models/set_type.dart';
+import 'dart:async';
 
 class WorkoutExerciseLogTemplate extends StatefulWidget {
   final Exercise exercise;
@@ -29,6 +30,9 @@ class WorkoutExerciseLogTemplateState
   List<TextEditingController> repsControllers = [];
   List<TextEditingController> restControllers = [];
 
+  List<int> countdowns = [];
+  List<Timer?> timers = [];
+
   @override
   void initState() {
     super.initState();
@@ -42,7 +46,7 @@ class WorkoutExerciseLogTemplateState
     // Make sure controllers exist for all sets
     weightControllers = List.generate(
       sets.length,
-      (i) => TextEditingController(text: '0'),
+      (i) => TextEditingController(text: ''),
     );
 
     repsControllers = List.generate(
@@ -54,11 +58,14 @@ class WorkoutExerciseLogTemplateState
       sets.length,
       (i) => TextEditingController(text: sets[i]['restFormatted']),
     );
+
+    countdowns = List.generate(sets.length, (i) => 0);
+    timers = List.generate(sets.length, (i) => null);
   }
 
   void _addSet() {
     setState(() {
-      int defaultRest = 180; // seconds
+      int defaultRest = 180;
       int minutes = defaultRest ~/ 60;
       int seconds = defaultRest % 60;
       String formattedRest = '$minutes:${seconds.toString().padLeft(2, '0')}';
@@ -75,12 +82,40 @@ class WorkoutExerciseLogTemplateState
       weightControllers.add(TextEditingController(text: '0'));
       repsControllers.add(TextEditingController(text: '8'));
       restControllers.add(TextEditingController(text: formattedRest));
+
+      countdowns.add(0);
+      timers.add(null);
     });
   }
 
   void _removeSet(int index) {
     setState(() {
+      timers[index]?.cancel();
+      timers.removeAt(index);
+      countdowns.removeAt(index);
       sets.removeAt(index);
+      weightControllers.removeAt(index);
+      repsControllers.removeAt(index);
+      restControllers.removeAt(index);
+    });
+  }
+
+  void _startRestCountdown(int index) {
+    timers[index]?.cancel();
+    int restSeconds = sets[index]['rest'] ?? 0;
+
+    setState(() {
+      countdowns[index] = restSeconds;
+    });
+
+    timers[index] = Timer.periodic(const Duration(seconds: 1), (timer) {
+      if (countdowns[index] > 0) {
+        setState(() {
+          countdowns[index]--;
+        });
+      } else {
+        timer.cancel();
+      }
     });
   }
 
@@ -312,6 +347,15 @@ class WorkoutExerciseLogTemplateState
                                     setState(() {
                                       sets[index]['isComplete'] =
                                           value ?? false;
+                                      if (value == true) {
+                                        _startRestCountdown(
+                                          index,
+                                        ); // start countdown
+                                      } else {
+                                        timers[index]
+                                            ?.cancel(); // stop countdown if unchecked
+                                        countdowns[index] = 0;
+                                      }
                                     });
                                   },
                                 ),
@@ -331,41 +375,15 @@ class WorkoutExerciseLogTemplateState
                                 ),
                               ),
                               SizedBox(
-                                width: 80, // controls how wide the input looks
-                                child: TextField(
-                                  controller: restControllers[index],
-                                  keyboardType: TextInputType.number,
-                                  textAlign: TextAlign.center,
-                                  inputFormatters: [MinSecInputFormatter()],
-                                  decoration: const InputDecoration(
-                                    isDense: true,
-                                    contentPadding: EdgeInsets.symmetric(
-                                      vertical: 2,
-                                    ),
-                                    border: InputBorder.none, // remove outline
-                                    hintText: '3:00',
-                                    hintStyle: TextStyle(
-                                      color: Colors.grey,
-                                      fontSize: 13,
-                                    ),
+                                width: 80,
+                                child: Center(
+                                  child: Text(
+                                    countdowns[index] > 0
+                                        ? '${(countdowns[index] ~/ 60).toString().padLeft(2, '0')}:${(countdowns[index] % 60).toString().padLeft(2, '0')}'
+                                        : sets[index]['restFormatted'],
+                                    textAlign: TextAlign.center,
+                                    style: const TextStyle(color: Colors.green),
                                   ),
-                                  style: const TextStyle(
-                                    color: Colors.white,
-                                    fontSize: 13,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                  onChanged: (value) {
-                                    sets[index]['restFormatted'] = value;
-                                    final parts = value.split(':');
-                                    if (parts.length == 2) {
-                                      final min = int.tryParse(parts[0]) ?? 0;
-                                      final sec = int.tryParse(parts[1]) ?? 0;
-                                      sets[index]['rest'] = min * 60 + sec;
-                                    } else {
-                                      sets[index]['rest'] =
-                                          int.tryParse(parts[0]) ?? 0;
-                                    }
-                                  },
                                 ),
                               ),
                               const Expanded(
@@ -394,7 +412,7 @@ class WorkoutExerciseLogTemplateState
               icon: const Icon(Icons.add),
               label: const Text('Add Set'),
             ),
-          ), // Additional UI elements for editing the exercise would go here
+          ),
         ],
       ),
     );
