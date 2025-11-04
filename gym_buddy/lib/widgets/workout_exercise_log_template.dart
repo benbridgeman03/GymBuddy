@@ -301,8 +301,6 @@ class WorkoutExerciseLogTemplateState
 
                             const SizedBox(width: 4),
 
-                            // Rest
-
                             // Complete Checkbox
                             Expanded(
                               flex: 1,
@@ -319,46 +317,66 @@ class WorkoutExerciseLogTemplateState
                                 ),
                               ),
                             ),
-                            const SizedBox(width: 4),
                           ],
                         ),
-                        Row(
-                          children: [
-                            Expanded(
-                              flex: 1,
-                              child: TextField(
-                                controller: restControllers[index],
-                                keyboardType: TextInputType.number,
-                                textAlign: TextAlign.center,
-                                inputFormatters: [MinSecInputFormatter()],
-                                decoration: const InputDecoration(
-                                  isDense: true,
-                                  contentPadding: EdgeInsets.symmetric(
-                                    vertical: 4,
-                                    horizontal: 6,
-                                  ),
-                                  border: OutlineInputBorder(),
-                                  hintText: '3:00',
-                                  hintStyle: TextStyle(
-                                    color: Colors.grey,
-                                    fontSize: 12,
-                                  ),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 6.0),
+                          child: Row(
+                            children: [
+                              const Expanded(
+                                child: Divider(
+                                  color: Colors.white30,
+                                  thickness: 1,
+                                  endIndent: 8,
                                 ),
-                                onChanged: (value) {
-                                  sets[index]['restFormatted'] = value;
-                                  final parts = value.split(':');
-                                  if (parts.length == 2) {
-                                    final min = int.tryParse(parts[0]) ?? 0;
-                                    final sec = int.tryParse(parts[1]) ?? 0;
-                                    sets[index]['rest'] = min * 60 + sec;
-                                  } else {
-                                    sets[index]['rest'] =
-                                        int.tryParse(parts[0]) ?? 0;
-                                  }
-                                },
                               ),
-                            ),
-                          ],
+                              SizedBox(
+                                width: 80, // controls how wide the input looks
+                                child: TextField(
+                                  controller: restControllers[index],
+                                  keyboardType: TextInputType.number,
+                                  textAlign: TextAlign.center,
+                                  inputFormatters: [MinSecInputFormatter()],
+                                  decoration: const InputDecoration(
+                                    isDense: true,
+                                    contentPadding: EdgeInsets.symmetric(
+                                      vertical: 2,
+                                    ),
+                                    border: InputBorder.none, // remove outline
+                                    hintText: '3:00',
+                                    hintStyle: TextStyle(
+                                      color: Colors.grey,
+                                      fontSize: 13,
+                                    ),
+                                  ),
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 13,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                  onChanged: (value) {
+                                    sets[index]['restFormatted'] = value;
+                                    final parts = value.split(':');
+                                    if (parts.length == 2) {
+                                      final min = int.tryParse(parts[0]) ?? 0;
+                                      final sec = int.tryParse(parts[1]) ?? 0;
+                                      sets[index]['rest'] = min * 60 + sec;
+                                    } else {
+                                      sets[index]['rest'] =
+                                          int.tryParse(parts[0]) ?? 0;
+                                    }
+                                  },
+                                ),
+                              ),
+                              const Expanded(
+                                child: Divider(
+                                  color: Colors.white30,
+                                  thickness: 1,
+                                  indent: 8,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     );
@@ -367,7 +385,6 @@ class WorkoutExerciseLogTemplateState
               ),
             );
           }),
-          const SizedBox(height: 8),
           //Add Set Button
           SizedBox(
             width: double.infinity,
