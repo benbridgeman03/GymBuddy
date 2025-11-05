@@ -32,6 +32,7 @@ class WorkoutExerciseLogTemplateState
 
   List<int> countdowns = [];
   List<Timer?> timers = [];
+  List<bool> isRunning = [];
 
   @override
   void initState() {
@@ -61,6 +62,7 @@ class WorkoutExerciseLogTemplateState
 
     countdowns = List.generate(sets.length, (i) => 0);
     timers = List.generate(sets.length, (i) => null);
+    isRunning = List.generate(sets.length, (_) => false);
   }
 
   void _addSet() {
@@ -85,6 +87,7 @@ class WorkoutExerciseLogTemplateState
 
       countdowns.add(0);
       timers.add(null);
+      isRunning.add(false);
     });
   }
 
@@ -100,23 +103,47 @@ class WorkoutExerciseLogTemplateState
     });
   }
 
-  void _startRestCountdown(int index) {
+  void _startRestCountdown(int index, {int? initialSeconds}) {
     timers[index]?.cancel();
-    int restSeconds = sets[index]['rest'] ?? 0;
+
+    int restSeconds = initialSeconds ?? 0;
 
     setState(() {
       countdowns[index] = restSeconds;
+      isRunning[index] = true;
     });
 
     timers[index] = Timer.periodic(const Duration(seconds: 1), (timer) {
       if (countdowns[index] > 0) {
         setState(() {
           countdowns[index]--;
+
+          // Update the TextField
+          final minutes = (countdowns[index] ~/ 60).toString().padLeft(2, '0');
+          final seconds = (countdowns[index] % 60).toString().padLeft(2, '0');
+          restControllers[index].text = '$minutes:$seconds';
+          restControllers[index].selection = TextSelection.fromPosition(
+            TextPosition(offset: restControllers[index].text.length),
+          );
         });
       } else {
         timer.cancel();
+        isRunning[index] = false;
       }
     });
+  }
+
+  void _stopAllCountdowns(int index) {
+    for (int i = 0; i < index; i++) {
+      if (isRunning[i]) {
+        timers[i]?.cancel();
+        timers[i] = null;
+        isRunning[i] = false;
+        countdowns[i] = 0;
+        restControllers[i].text = '0:00';
+      }
+    }
+    setState(() {});
   }
 
   WorkoutExerciseLog toWorkoutExerciseLog() {
@@ -248,7 +275,7 @@ class WorkoutExerciseLogTemplateState
                             Expanded(
                               flex: 2,
                               child: DropdownButtonFormField<String>(
-                                value: setTypesMap.entries
+                                initialValue: setTypesMap.entries
                                     .firstWhere(
                                       (e) => e.value.name == set['type'],
                                       orElse: () =>
@@ -348,12 +375,28 @@ class WorkoutExerciseLogTemplateState
                                       sets[index]['isComplete'] =
                                           value ?? false;
                                       if (value == true) {
+                                        _stopAllCountdowns(index);
+
+                                        final parts = restControllers[index]
+                                            .text
+                                            .split(':');
+                                        int totalSeconds = 0;
+                                        if (parts.length == 2) {
+                                          final min =
+                                              int.tryParse(parts[0]) ?? 0;
+                                          final sec =
+                                              int.tryParse(parts[1]) ?? 0;
+                                          totalSeconds = min * 60 + sec;
+                                        } else {
+                                          totalSeconds =
+                                              int.tryParse(parts[0]) ?? 0;
+                                        }
                                         _startRestCountdown(
                                           index,
-                                        ); // start countdown
+                                          initialSeconds: totalSeconds,
+                                        );
                                       } else {
-                                        timers[index]
-                                            ?.cancel(); // stop countdown if unchecked
+                                        timers[index]?.cancel();
                                         countdowns[index] = 0;
                                       }
                                     });
@@ -367,9 +410,11 @@ class WorkoutExerciseLogTemplateState
                           padding: const EdgeInsets.symmetric(vertical: 6.0),
                           child: Row(
                             children: [
-                              const Expanded(
+                              Expanded(
                                 child: Divider(
-                                  color: Colors.white30,
+                                  color: countdowns[index] == 0
+                                      ? Colors.green
+                                      : Colors.white30,
                                   thickness: 1,
                                   endIndent: 8,
                                 ),
@@ -377,18 +422,50 @@ class WorkoutExerciseLogTemplateState
                               SizedBox(
                                 width: 80,
                                 child: Center(
-                                  child: Text(
-                                    countdowns[index] > 0
-                                        ? '${(countdowns[index] ~/ 60).toString().padLeft(2, '0')}:${(countdowns[index] % 60).toString().padLeft(2, '0')}'
-                                        : sets[index]['restFormatted'],
+                                  child: TextField(
+                                    controller: restControllers[index],
+                                    keyboardType: TextInputType.number,
                                     textAlign: TextAlign.center,
-                                    style: const TextStyle(color: Colors.green),
+                                    decoration: const InputDecoration(
+                                      hintText: 'mm:ss',
+                                      border: InputBorder.none,
+                                    ),
+                                    style: TextStyle(color: Colors.green),
+                                    inputFormatters: [MinSecInputFormatter()],
+
+                                    // Called when the user finishes editing
+                                    onSubmitted: (value) {
+                                      final parts = value.split(':');
+                                      int totalSeconds = 0;
+                                      if (parts.length == 2) {
+                                        final min = int.tryParse(parts[0]) ?? 0;
+                                        final sec = int.tryParse(parts[1]) ?? 0;
+                                        totalSeconds = min * 60 + sec;
+                                      } else {
+                                        totalSeconds =
+                                            int.tryParse(parts[0]) ?? 0;
+                                      }
+
+                                      // Restart countdown from new value if checkbox is checked
+                                      if (sets[index]['isComplete'] == true) {
+                                        _startRestCountdown(
+                                          index,
+                                          initialSeconds: totalSeconds,
+                                        );
+                                      }
+                                    },
+
+                                    onChanged: (value) {
+                                      timers[index]?.cancel();
+                                    },
                                   ),
                                 ),
                               ),
-                              const Expanded(
+                              Expanded(
                                 child: Divider(
-                                  color: Colors.white30,
+                                  color: countdowns[index] == 0
+                                      ? Colors.green
+                                      : Colors.white30,
                                   thickness: 1,
                                   indent: 8,
                                 ),
