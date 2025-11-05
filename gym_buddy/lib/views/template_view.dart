@@ -46,6 +46,8 @@ class _TemplateView extends State<TemplateView> {
     final provider = context.read<ExerciseProvider>();
     final exercises = provider.exercises;
 
+    print(exercises);
+
     final selected = await showDialog<String>(
       context: context,
       builder: (_) => ExercisePickerDialog(

@@ -5,7 +5,6 @@ import 'package:gym_buddy/models/workout_log.dart';
 import 'package:gym_buddy/providers/exercise_provider.dart';
 import 'package:gym_buddy/widgets/exercise_picker.dart';
 import 'package:gym_buddy/widgets/workout_exercise_log_template.dart';
-import 'package:gym_buddy/widgets/workout_exercise_template.dart';
 import 'package:provider/provider.dart';
 import '../providers/panel_manager.dart';
 import 'package:gym_buddy/models/workout_template.dart';

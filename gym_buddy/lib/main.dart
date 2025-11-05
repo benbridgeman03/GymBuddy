@@ -16,10 +16,13 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp();
 
+  final exerciseProvider = ExerciseProvider();
+  exerciseProvider.init();
+
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ExerciseProvider()..init()),
+        ChangeNotifierProvider(create: (_) => exerciseProvider),
         ChangeNotifierProvider(create: (_) => PanelManager()),
         ChangeNotifierProvider(create: (_) => WorkoutManager()),
       ],

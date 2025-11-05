@@ -13,6 +13,7 @@ class ExerciseProvider extends ChangeNotifier {
   bool get isLoading => _isLoading;
 
   Future<void> init() async {
+    print("Init exercises");
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
 
