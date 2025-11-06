@@ -45,7 +45,7 @@ class WorkoutExerciseLog {
 
   factory WorkoutExerciseLog.fromMap(Map<String, dynamic> data) =>
       WorkoutExerciseLog(
-        exercise: data['exercise'],
+        exercise: Exercise.fromMap(data['exercise'] as Map<String, dynamic>),
         sets: (data['sets'] as List<dynamic>)
             .map((s) => WorkoutSetLog.fromMap(s))
             .toList(),
@@ -56,6 +56,7 @@ class WorkoutExerciseLog {
 class WorkoutSession {
   final String id;
   final String? templateId;
+  final String? templateName;
   final DateTime startedAt;
   final DateTime? completedAt;
   final List<WorkoutExerciseLog> exercises;
@@ -63,6 +64,7 @@ class WorkoutSession {
   WorkoutSession({
     required this.id,
     required this.templateId,
+    required this.templateName,
     required this.startedAt,
     this.completedAt,
     required this.exercises,
@@ -70,6 +72,7 @@ class WorkoutSession {
 
   Map<String, dynamic> toMap() => {
     'templateId': templateId,
+    'templateName': templateName,
     'startedAt': Timestamp.fromDate(startedAt),
     'completedAt': completedAt != null
         ? Timestamp.fromDate(completedAt!)
@@ -82,6 +85,7 @@ class WorkoutSession {
     return WorkoutSession(
       id: doc.id,
       templateId: data['templateId'],
+      templateName: data['templateName'],
       startedAt: (data['startedAt'] as Timestamp).toDate(),
       completedAt: data['completedAt'] != null
           ? (data['completedAt'] as Timestamp).toDate()

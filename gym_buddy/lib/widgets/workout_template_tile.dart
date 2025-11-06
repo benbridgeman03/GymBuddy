@@ -9,8 +9,7 @@ import 'package:provider/provider.dart';
 class WorkoutTemplateTile extends StatefulWidget {
   final WorkoutTemplate template;
 
-  const WorkoutTemplateTile({Key? key, required this.template})
-    : super(key: key);
+  const WorkoutTemplateTile({super.key, required this.template});
 
   @override
   State<WorkoutTemplateTile> createState() => _WorkoutTemplateTileState();
@@ -68,15 +67,7 @@ class _WorkoutTemplateTileState extends State<WorkoutTemplateTile> {
                             Row(
                               children: [
                                 Text(
-                                  template.exercises[i].exercise.name,
-                                  style: const TextStyle(
-                                    color: Colors.white70,
-                                    fontSize: 16,
-                                  ),
-                                ),
-                                const SizedBox(width: 4),
-                                Text(
-                                  '× ${template.exercises[i].sets.where((ex) => ex.setType != SetType.warmup).length}',
+                                  '${template.exercises[i].exercise.name} × ${template.exercises[i].sets.where((ex) => ex.setType != SetType.warmup).length}',
                                   style: const TextStyle(
                                     color: Colors.white70,
                                     fontSize: 16,

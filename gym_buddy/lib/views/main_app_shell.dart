@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:gym_buddy/views/history_view.dart';
 import 'home_view.dart';
 import 'exercises_view.dart';
 import '/views/workout_view.dart';
@@ -21,10 +22,11 @@ class _AppShellState extends State<AppShell> {
   final List<Widget> _pages = [
     const HomeView(),
     const ExcersizesView(),
-    const Center(child: Text("History Page")), // placeholder for now
+    const HistoryView(), // placeholder for now
     const ProfileView(), // placeholder for now
   ];
 
+  @override
   Widget build(BuildContext context) {
     final panelManager = Provider.of<PanelManager>(context);
     final workoutManager = Provider.of<WorkoutManager>(context);

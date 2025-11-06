@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:gym_buddy/providers/history_provider.dart';
 import 'package:provider/provider.dart';
 
 import 'views/auth/auth_view.dart';
@@ -19,10 +20,14 @@ void main() async {
   final exerciseProvider = ExerciseProvider();
   exerciseProvider.init();
 
+  final histroyProvider = HistoryProvider();
+  histroyProvider.init();
+
   runApp(
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => exerciseProvider),
+        ChangeNotifierProvider(create: (_) => histroyProvider),
         ChangeNotifierProvider(create: (_) => PanelManager()),
         ChangeNotifierProvider(create: (_) => WorkoutManager()),
       ],

@@ -12,9 +12,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../providers/workout_manager.dart';
 
 class WorkoutView extends StatefulWidget {
-  final WorkoutTemplate? existingTemplate;
   final ScrollController? scrollController;
-  const WorkoutView({super.key, this.existingTemplate, this.scrollController});
+  const WorkoutView({super.key, this.scrollController});
 
   @override
   State<WorkoutView> createState() => _WorkoutViewState();
@@ -107,7 +106,6 @@ class _WorkoutViewState extends State<WorkoutView> {
   void _saveWorkout() async {
     final uid = FirebaseAuth.instance.currentUser?.uid;
     if (uid == null) return;
-    final existingId = widget.existingTemplate?.id;
 
     final provider = context.read<WorkoutManager>();
     final startedAt = provider.startedAt ?? DateTime.now();
@@ -130,7 +128,8 @@ class _WorkoutViewState extends State<WorkoutView> {
     final template = WorkoutSession(
       id: '',
       exercises: exercises,
-      templateId: '',
+      templateId: _loadedTemplate?.id,
+      templateName: _loadedTemplate?.name,
       startedAt: startedAt,
       completedAt: DateTime.now(),
     );
