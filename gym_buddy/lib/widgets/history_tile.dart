@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:gym_buddy/models/set_type.dart';
 import 'package:gym_buddy/models/workout_log.dart';
 import 'package:gym_buddy/services/get_time_of_day.dart';
+import 'package:gym_buddy/views/edit_workout_view.dart';
 import 'package:intl/intl.dart';
 
 class HistoryTile extends StatefulWidget {
@@ -19,7 +20,12 @@ class _HistoryTileState extends State<HistoryTile> {
     return InkWell(
       borderRadius: BorderRadius.circular(12),
       onTap: () {
-        print('Workout tapped!');
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => EditHistoryView(workout: widget.workout),
+          ),
+        );
       },
       child: Container(
         decoration: BoxDecoration(

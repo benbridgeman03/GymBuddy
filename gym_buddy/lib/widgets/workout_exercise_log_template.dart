@@ -1,19 +1,16 @@
 import 'package:flutter/material.dart';
-import 'package:gym_buddy/models/exercise.dart';
 import 'package:gym_buddy/models/workout_log.dart';
 import 'package:gym_buddy/services/min_sec_input_formatter.dart';
 import 'package:gym_buddy/models/set_type.dart';
 import 'dart:async';
 
 class WorkoutExerciseLogTemplate extends StatefulWidget {
-  final Exercise exercise;
-  final List<Map<String, dynamic>>? initialSets;
+  final WorkoutExerciseLog? exerciseLog;
   final VoidCallback? onRemove;
 
   const WorkoutExerciseLogTemplate({
     super.key,
-    required this.exercise,
-    this.initialSets,
+    this.exerciseLog,
     this.onRemove,
   });
 
@@ -38,30 +35,34 @@ class WorkoutExerciseLogTemplateState
   void initState() {
     super.initState();
 
-    if (widget.initialSets != null && widget.initialSets!.isNotEmpty) {
-      sets = List<Map<String, dynamic>>.from(widget.initialSets!);
+    if (widget.exerciseLog != null) {
+      final log = widget.exerciseLog!;
+      for (final set in log.sets) {
+        final minutes = set.restSeconds ~/ 60;
+        final seconds = set.restSeconds % 60;
+        final formattedRest = '$minutes:${seconds.toString().padLeft(2, '0')}';
+
+        sets.add({
+          'reps': set.reps,
+          'weight': set.weight,
+          'rest': set.restSeconds,
+          'restFormatted': formattedRest,
+          'type': set.setType.name,
+          'isComplete': false,
+        });
+
+        weightControllers.add(
+          TextEditingController(text: set.weight.toString()),
+        );
+        repsControllers.add(TextEditingController(text: set.reps.toString()));
+        restControllers.add(TextEditingController(text: formattedRest));
+      }
     } else {
-      _addSet(); // adds first set and controllers
+      _addSet(); // default empty
     }
 
-    // Make sure controllers exist for all sets
-    weightControllers = List.generate(
-      sets.length,
-      (i) => TextEditingController(text: ''),
-    );
-
-    repsControllers = List.generate(
-      sets.length,
-      (i) => TextEditingController(text: sets[i]['reps'].toString()),
-    );
-
-    restControllers = List.generate(
-      sets.length,
-      (i) => TextEditingController(text: sets[i]['restFormatted']),
-    );
-
-    countdowns = List.generate(sets.length, (i) => 0);
-    timers = List.generate(sets.length, (i) => null);
+    countdowns = List.generate(sets.length, (_) => 0);
+    timers = List.generate(sets.length, (_) => null);
     isRunning = List.generate(sets.length, (_) => false);
   }
 
@@ -148,7 +149,7 @@ class WorkoutExerciseLogTemplateState
 
   WorkoutExerciseLog toWorkoutExerciseLog() {
     return WorkoutExerciseLog(
-      exercise: widget.exercise,
+      exercise: widget.exerciseLog!.exercise,
       sets: sets.map((set) {
         return WorkoutSetLog(
           setType: SetType.values.firstWhere(
@@ -179,7 +180,7 @@ class WorkoutExerciseLogTemplateState
           Row(
             children: [
               Text(
-                widget.exercise.name,
+                widget.exerciseLog!.exercise.name,
                 style: const TextStyle(color: Colors.white, fontSize: 16),
               ),
               const Spacer(),

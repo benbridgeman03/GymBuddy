@@ -1,15 +1,9 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:gym_buddy/models/bodypart.dart';
 import 'package:gym_buddy/models/workout_log.dart';
-import 'package:gym_buddy/models/workout_template.dart';
 import 'package:gym_buddy/providers/history_provider.dart';
 import 'package:gym_buddy/widgets/history_tile.dart';
 import 'package:provider/provider.dart';
-import '../models/exercise.dart';
-import '../services/string_extension.dart';
-import '../providers/exercise_provider.dart';
 import 'package:intl/intl.dart';
 
 class HistoryView extends StatelessWidget {

@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:gym_buddy/models/exercise.dart';
+import 'package:gym_buddy/models/set_type.dart';
 import 'package:gym_buddy/models/workout_log.dart';
 import 'package:gym_buddy/providers/exercise_provider.dart';
 import 'package:gym_buddy/widgets/exercise_picker.dart';
@@ -64,6 +65,7 @@ class _WorkoutViewState extends State<WorkoutView> {
   }
 
   void _addExercise(Exercise exercise) {
+    print("added workout");
     setState(() {
       _workoutExercises.add(exercise);
       _editorKeys.add(GlobalKey<WorkoutExerciseLogTemplateState>());
@@ -219,29 +221,32 @@ class _WorkoutViewState extends State<WorkoutView> {
               ..._workoutExercises.asMap().entries.map((entry) {
                 final index = entry.key;
                 final exercise = entry.value;
-                final initialSets =
+
+                final List<WorkoutSetLog> initialSets =
                     (_loadedTemplate != null &&
                         index < _loadedTemplate!.exercises.length)
-                    ? _loadedTemplate!.exercises[index].sets
-                          .map(
-                            (s) => {
-                              'type': s.setType.name,
-                              'rest': s.restSeconds,
-                              'restFormatted':
-                                  '${s.restSeconds ~/ 60}:${(s.restSeconds % 60).toString().padLeft(2, '0')}',
-                              'reps': s.reps,
-                            },
-                          )
-                          .toList()
-                    : null;
+                    ? List<WorkoutSetLog>.from(
+                        _loadedTemplate!.exercises[index].sets as List<dynamic>,
+                      )
+                    : [
+                        WorkoutSetLog(
+                          setType: SetType.working,
+                          reps: 8,
+                          weight: 0,
+                          restSeconds: 180,
+                        ),
+                      ];
 
                 return WorkoutExerciseLogTemplate(
                   key: _editorKeys[index],
-                  exercise: exercise,
-                  initialSets: initialSets,
+                  exerciseLog: WorkoutExerciseLog(
+                    exercise: exercise,
+                    sets: initialSets,
+                  ),
                   onRemove: () => _removeExercise(exercise),
                 );
-              }),
+              }).toList(),
+
               SizedBox(
                 width: double.infinity,
                 child: ElevatedButton(
