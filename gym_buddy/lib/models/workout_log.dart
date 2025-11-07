@@ -70,6 +70,24 @@ class WorkoutSession {
     required this.exercises,
   });
 
+  WorkoutSession copyWith({
+    String? id,
+    String? templateId,
+    String? templateName,
+    DateTime? startedAt,
+    DateTime? completedAt,
+    List<WorkoutExerciseLog>? exercises,
+  }) {
+    return WorkoutSession(
+      id: id ?? this.id,
+      templateId: templateId ?? this.templateId,
+      templateName: templateName ?? this.templateName,
+      startedAt: startedAt ?? this.startedAt,
+      completedAt: completedAt ?? this.completedAt,
+      exercises: exercises ?? this.exercises,
+    );
+  }
+
   Map<String, dynamic> toMap() => {
     'templateId': templateId,
     'templateName': templateName,

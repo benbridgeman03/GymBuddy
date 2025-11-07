@@ -121,9 +121,9 @@ class _WorkoutViewState extends State<WorkoutView> {
     }
 
     if (exercises.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Template cannot be empty!')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Workout cannot be empty!')));
       return;
     }
 

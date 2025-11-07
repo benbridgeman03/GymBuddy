@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:gym_buddy/models/exercise.dart';
@@ -61,7 +62,9 @@ class _EditHistoryViewState extends State<EditHistoryView> {
 
   void _addExercise(Exercise exercise) {
     setState(() {
-      _workoutExercises.add(exercise);
+      final newLog = WorkoutExerciseLog(exercise: exercise, sets: []);
+
+      _exerciseLogs.add(newLog);
       _editorKeys.add(GlobalKey<WorkoutExerciseLogTemplateState>());
     });
   }
@@ -75,6 +78,53 @@ class _EditHistoryViewState extends State<EditHistoryView> {
         _exerciseLogs.removeAt(index);
         _editorKeys.removeAt(index);
       });
+    }
+  }
+
+  void _saveWorkout() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please log in to save your workout.')),
+      );
+      return;
+    }
+
+    final updatedLogs = _editorKeys
+        .map((key) {
+          final state = key.currentState;
+          return state?.toWorkoutExerciseLog();
+        })
+        .whereType<WorkoutExerciseLog>()
+        .toList();
+
+    if (updatedLogs.isEmpty) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Workout cannot be empty!')));
+      return;
+    }
+
+    final updatedWorkout = widget.workout.copyWith(exercises: updatedLogs);
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(uid)
+          .collection('workouts')
+          .doc(updatedWorkout.id)
+          .update(updatedWorkout.toMap());
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Workout updated successfully!')),
+        );
+        Navigator.pop(context);
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Error saving workout: $e')));
     }
   }
 
@@ -95,7 +145,7 @@ class _EditHistoryViewState extends State<EditHistoryView> {
                 Row(
                   children: [
                     Text(
-                      'New Template',
+                      'Edit Workout',
                       style: Theme.of(context).textTheme.headlineLarge
                           ?.copyWith(fontWeight: FontWeight.bold),
                     ),
@@ -122,10 +172,19 @@ class _EditHistoryViewState extends State<EditHistoryView> {
 
                 const SizedBox(height: 16),
 
-                ElevatedButton.icon(
-                  onPressed: () => _openExercisePicker(context, uid),
-                  icon: const Icon(Icons.add),
-                  label: const Text('Add Exercise'),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: () => _openExercisePicker(context, uid),
+                    child: const Text('Add Exercise'),
+                  ),
+                ),
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                    onPressed: _saveWorkout,
+                    child: const Text('Save Workout'),
+                  ),
                 ),
               ],
             ),
