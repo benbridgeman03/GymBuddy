@@ -223,19 +223,24 @@ class _WorkoutViewState extends State<WorkoutView> {
                 final exercise = entry.value;
 
                 final List<WorkoutSetLog> initialSets =
-                    (_loadedTemplate != null &&
-                        index < _loadedTemplate!.exercises.length)
-                    ? List<WorkoutSetLog>.from(
-                        _loadedTemplate!.exercises[index].sets as List<dynamic>,
-                      )
-                    : [
-                        WorkoutSetLog(
-                          setType: SetType.working,
-                          reps: 8,
-                          weight: 0,
-                          restSeconds: 180,
-                        ),
-                      ];
+                    (_loadedTemplate != null && index < _loadedTemplate!.exercises.length)
+                        ? _loadedTemplate!.exercises[index].sets.map((set) {
+                            return WorkoutSetLog(
+                              reps: set.reps,
+                              weight: 0,
+                              restSeconds: set.restSeconds,
+                              setType: set.setType,
+                            );
+                          }).toList()
+                        : [
+                            WorkoutSetLog(
+                              setType: SetType.working,
+                              reps: 8,
+                              weight: 0,
+                              restSeconds: 180,
+                            ),
+                          ];
+
 
                 return WorkoutExerciseLogTemplate(
                   key: _editorKeys[index],
@@ -245,7 +250,7 @@ class _WorkoutViewState extends State<WorkoutView> {
                   ),
                   onRemove: () => _removeExercise(exercise),
                 );
-              }).toList(),
+              }),
 
               SizedBox(
                 width: double.infinity,
