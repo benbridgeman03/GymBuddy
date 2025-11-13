@@ -5,7 +5,7 @@ The app allows users to:
   Track sets, reps, and weights
   View and analyze past workout history
 
-This project is currently under development. The goal is to provide an easy and intuitive way to track gym progress on both Android and iOS.
+This project is currently under development. The goal is to provide an easy and intuitive way to track gym progress on both Android.
 
 Tech Stack
   Flutter & Dart
